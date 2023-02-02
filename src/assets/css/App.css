@@ -5,10 +5,9 @@
 .App {
   text-align: center;
   display: flex;
-  width: clamp(0px, 100%, 1300px);
+  padding: 0px 10px;
+  width: clamp(0px, 100%, 1320px);
   margin: auto;
-  background-color: rgb(238, 238, 238);
-  gap: 1px;
   min-height: 100vh;
 }
 
@@ -17,14 +16,17 @@
 }
 
 main {
+  border-right: 1px solid rgb(239, 243, 244);
   max-width: 620px;
   flex: 2;
 }
 
 nav {
+  border-right: 1px solid rgb(239, 243, 244);
+  ;
   flex: 1;
   text-align: left;
-  padding: 10px 20px;
+  padding: 10px 30px;
   max-width: 275px;
   position: -webkit-sticky;
   position: sticky;
@@ -34,27 +36,39 @@ nav {
 
 .right-bar {
   flex: 1;
-
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .nav-links {
   width: 100%;
   padding: 0;
+  margin-top: 8px;
   font-size: 1.4rem;
   list-style-type: none;
   justify-content: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  transition: 200s;
+  gap: 8px;
+  transition: 200ms;
 }
 
 .nav-links a {
+  width: fit-content;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   color: var(--font-color);
   text-decoration: none;
+  padding: 12px;
+  transition: 300ms;
+  border-radius: 50px;
+}
+
+.nav-links a:hover {
+  background-color: rgb(236, 236, 236);
 }
 
 nav svg {
@@ -66,13 +80,16 @@ nav svg {
   fill: rgb(29, 155, 240);
   stroke: none;
 }
+.logo{
+  padding: 12px;
+}
 
 .active svg {
   fill: black;
   stroke: none;
 }
 
-li:nth-child(2) .active  svg {
+li:nth-child(2) .active svg {
   height: 30px;
   fill: white;
   stroke: black;
@@ -128,3 +145,50 @@ li:nth-child(2) .active  svg {
     transform: rotate(360deg);
   }
 }
+
+.tweet-button svg {
+  display: none;
+  height: 30px;
+}
+
+.sidebar-text-node {
+  padding-right: 10px;
+}
+
+@media (max-width: 1281px) {
+  .sidebar-text-node {
+    display: none;
+  }
+
+  nav {
+    max-width: 210px;
+  }
+
+  .nav-links a {
+    justify-content: flex-end;
+    padding: .75rem;
+    margin-left: auto;
+  }
+
+  .tweet-button svg {
+    display: block;
+    fill: white;
+  }
+
+  .tweet-button {
+    display: flex;
+    align-items: flex-end;
+    padding: .75rem;
+    width: auto;
+    margin-left: auto;
+    text-align: right;
+  }
+  .logo{
+    text-align: center;
+  }
+    nav {
+      padding: 10px 20px;
+      max-width: 94px;
+    }
+}
+

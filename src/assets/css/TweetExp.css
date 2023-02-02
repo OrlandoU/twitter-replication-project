@@ -1,0 +1,136 @@
+.main-tweet-profile {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.tweet-exp{
+    position: relative;
+}
+
+.main-tweet {
+    padding: 16px 16px 5px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-margin: 40px;
+}
+
+.main-tweet-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.main-tweet-names {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.main-tweet-main-content {
+    font-size: 23px;
+    text-align: start;
+    white-space: pre-line;
+}
+
+.main-tweet-wrapper {
+    border-top: 1px solid rgb(239, 243, 244);
+    border-bottom: 1px solid rgb(239, 243, 244);
+}
+
+.main-tweet-interact {
+    background-color: white;
+    width: 100%;
+    padding: 4px 30px 4px 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+}
+
+.main-tweet-interact svg {
+    height: 36.75px;
+    fill: rgb(83, 100, 113);
+    padding: 7px;
+    border-radius: 50%;
+    transition: 100ms;
+}
+
+.main-tweet-interact>* {
+    color: rgb(83, 100, 113);
+    display: flex;
+    gap: 5px;
+    padding: 0px 20px 0px 0px;
+    transition: 100ms;
+    align-items: center;
+    font-size: 16px;
+    border-radius: 50%;
+    font-weight: 400;
+}
+
+.bold {
+    font-weight: 600;
+    color: black;
+}
+
+.main-tweet-meta {
+    border-top: 1px solid rgb(239, 243, 244);
+    display: flex;
+    align-items: center;
+    height: 44px;
+    gap: 15px;
+    color: rgb(83, 100, 113);
+}
+
+.tweet-parent .side-tweet {
+    position: relative;
+}
+.tweet-parent .tweet-profile-pic , .main-tweet .tweet-profile-pic{
+    box-shadow: 0px 0px 0px 5px white;
+}
+.tweet-parent .side-tweet::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background-color: gainsboro;
+    top: 20px;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 0);
+    z-index: 1;
+}
+.return-tweet-exp{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.795);
+    border: 0;
+    position: sticky;
+    top: 0;
+    height: 53px;
+    font-size: 1.35rem;
+    font-weight: 600;
+    z-index: 10;
+}
+.return-tweet-exp:hover{
+    cursor: pointer;
+}
+.return-tweet-exp .wrapper{
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.return-tweet-exp svg{
+    height: 40%;
+    width: 40%;
+}
+
+.tweet-parent{
+    border: 0px;
+}

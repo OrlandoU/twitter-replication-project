@@ -1,8 +1,6 @@
 .home {
-    background-color: gainsboro;
     display: flex;
     flex-direction: column;
-    gap: 1px;
 }
 
 .home>* {
@@ -10,7 +8,7 @@
     background-color: white;
 }
 
-.main-tweet {
+.main-tweet-content {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -20,14 +18,18 @@
 .tweet {
     padding: 12px 12px 5px 12px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+    transition: 200ms;
 }
 
 .tweet-profile-pic {
-    height: 45px;
-    width: 45px;
+    height: 48px;
+    width: 48px;
     object-fit: cover;
     border-radius: 50%;
+    position: relative;
+    z-index: 2;
 }
 
 .tweet-username {
@@ -60,6 +62,7 @@
 .tweet-content {
     text-align: left;
     font-weight: 400;
+    white-space: pre-line;
 }
 
 .tweet-interact svg {
@@ -140,4 +143,72 @@
     stroke-width: .5px;
     stroke: rgb(34, 151, 120);
     fill: rgb(34, 151, 120);
+}
+
+.tweet:not(.return-tweet-exp):not(.home-write):hover {
+    background-color: rgb(248, 244, 244);
+}
+
+.write-left-options {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.sub-options {
+    width: 20px;
+    fill: rgb(0, 140, 255);
+}
+
+.tweet-write-content {
+    padding: 10px 0px 10px 0px;
+    min-height: 48px;
+    text-align: left;
+    border: 0px;
+    width: 100%;
+    resize: none;
+    outline: 0px;
+    font-size: 1.5rem;
+}
+
+.tweet-write {
+    flex: 1;
+}
+
+.tweet-write-options {
+    padding: 10px 0px;
+    display: flex;
+}
+
+.media-tweet{
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.media-tweet:hover {
+    background-color: rgba(0, 140, 255, 0.116);
+}
+
+.home-tweet-button {
+    padding: .5rem 1.25rem;
+    color: white;
+    background-color: rgb(0, 140, 255);
+    transition: 200ms;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: 0px;
+    outline: 0px;
+}
+
+.disabled {
+    background-color: rgb(136, 199, 250);
+}
+
+.home-tweet-button:not(.disabled):hover{
+    background-color: rgba(0, 140, 255, 0.74);
 }

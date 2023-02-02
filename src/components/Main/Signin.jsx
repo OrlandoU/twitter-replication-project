@@ -1,11 +1,10 @@
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useContext, useState } from "react"
-import { UserContext } from "../../UserContext";
+import { UserContext } from "../../Contexts/UserContext";
 
 function Signin() {
     const user = useContext(UserContext)
-    console.log(user)
     const [isLogin, setIsLogin] = useState(false)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')

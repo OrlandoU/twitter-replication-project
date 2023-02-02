@@ -4,3 +4,9 @@
     gap: 20px;
     padding: 20px;
 }
+
+@media (max-width: 821px) {
+    .right-bar {
+        display: none;
+    }
+}

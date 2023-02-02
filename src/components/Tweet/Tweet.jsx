@@ -1,13 +1,18 @@
 import { arrayRemove, arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { UserContext } from "../../UserContext";
+import { useNavigate } from "react-router-dom";
+import { CreateTweetContext } from "../../Contexts/CreateTweetContexts";
+import { UserContext } from "../../Contexts/UserContext";
 
 function Tweet(props) {
+    const navigate = useNavigate()
     const user = useContext(UserContext)
-    const [ref, inView] = useInView({ threshold: 1 })
-
+    const createTweet = useContext(CreateTweetContext)
+    const [ref, inView] = useInView({ threshold: 1, triggerOnce: true })
+    const [viewed, setViewed] = useState(false)
     const { tweetData } = props
+
     const convertTime = (time) => {
         let hours = Math.abs(new Date().getTime() - time) / 36e5;
         if (hours < 1) {
@@ -23,11 +28,14 @@ function Tweet(props) {
         return Math.trunc(hours) + 'h'
     }
 
-    const handleReply = () => {
-        props.createTweet(`This is a reply sent by ${user.user.name}`, props.id, tweetData.userId)
+    const handleReply = (e) => {
+        e.stopPropagation()
+        if (!user.user) return false
+        createTweet(`This is a reply sent by ${user.user.name}`,null, props.id, tweetData.userId)
     }
 
-    const handleLike = async () => {
+    const handleLike = async (e) => {
+        e.stopPropagation()
         if (!user.user) return false
         if (isLiked()) {
             await updateDoc(doc(getFirestore(), 'tweets', props.id), {
@@ -40,7 +48,8 @@ function Tweet(props) {
         }
     }
 
-    const handleRetweet = async () => {
+    const handleRetweet = async (e) => {
+        e.stopPropagation()
         if (!user.user) return false
         if (isRetweeted()) {
             await updateDoc(doc(getFirestore(), 'tweets', props.id), {
@@ -62,25 +71,37 @@ function Tweet(props) {
         if (!user.user) return false
         return tweetData.retweeted_by.includes(user.user.tag)
     }
-    const handleView = async() => {
+    const handleView = async () => {
         if (inView) {
-            await updateDoc(doc(getFirestore(), 'tweets', props.id), {
-                viewers: arrayUnion(user.user.tag)
-            })
+            try {
+                await updateDoc(doc(getFirestore(), 'tweets', props.id), {
+                    viewers: arrayUnion(user.user.tag)
+                })
+                setViewed(true)
+            } catch (error) {
+                console.error('Error updating view count', error)
+            }
+            
         }
     }
 
+    const navigateToTweet = () => {
+        navigate(`/${tweetData.userId}/status/${props.id}`)
+    }
+
     useEffect(() => {
-        if (!user.user) return false
-        handleView()
+        if (user.user && !viewed) {
+            handleView()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inView])
 
     return (
-        <div className="tweet">
+        <div className={props.isParent ? "tweet tweet-parent": 'tweet'} onClick={navigateToTweet}>
             <div className="side-tweet">
                 <img className="tweet-profile-pic" src={tweetData.user_profile_pic} alt="" />
             </div>
-            <div className="main-tweet">
+            <div className="main-tweet-content">
                 <div className="tweet-header">
                     <div className="tweet-username">{tweetData.username}</div>
                     <div className="tweet-usertag">{tweetData.userId}</div>
@@ -88,7 +109,7 @@ function Tweet(props) {
                 </div>
                 {tweetData.parent_tweet_user && (
                     <div className="tweet-replied">
-                        Replying to <a href="#">{tweetData.parent_tweet_user}</a>
+                        Replying to <a href="youtube.com">{tweetData.parent_tweet_user}</a>
                     </div>
                 )}
                 <div className="tweet-content" ref={ref}>{tweetData.content}</div>
