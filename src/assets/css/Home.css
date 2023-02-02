@@ -1,0 +1,143 @@
+.home {
+    background-color: gainsboro;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.home>* {
+    margin: 0;
+    background-color: white;
+}
+
+.main-tweet {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tweet {
+    padding: 12px 12px 5px 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.tweet-profile-pic {
+    height: 45px;
+    width: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.tweet-username {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.tweet-usertag {
+    color: rgb(83, 100, 113);
+}
+
+.tweet-timestamp {
+    color: rgb(83, 100, 113);
+}
+
+.tweet-header {
+    display: flex;
+    gap: 5px;
+}
+
+.tweet-replied {
+    color: rgb(83, 100, 113);
+    text-align: start;
+}
+
+.tweet-replied a {
+    color: rgb(0, 174, 255);
+}
+
+.tweet-content {
+    text-align: left;
+    font-weight: 400;
+}
+
+.tweet-interact svg {
+    height: 31.75px;
+    fill: rgb(83, 100, 113);
+    padding: 7px;
+    border-radius: 50%;
+    transition: 100ms;
+}
+
+.tweet-interact>* {
+    color: rgb(83, 100, 113);
+    display: flex;
+    gap: 5px;
+    padding: 0px 20px 0px 0px;
+    transition: 100ms;
+    align-items: center;
+    font-size: 13px;
+    border-radius: 50%;
+    font-weight: 400;
+}
+
+.tweet-interact>*:hover svg {
+    background-color: gainsboro;
+
+}
+
+.comment:hover svg {
+    background-color: rgba(99, 180, 255, 0.212);
+    fill: rgb(0, 162, 255);
+}
+
+.comment:hover {
+    color: rgb(0, 140, 255);
+}
+
+.like:hover svg {
+    background-color: rgba(249, 24, 129, 0.116);
+    fill: rgb(249, 24, 128);
+}
+
+.like:hover {
+    color: rgb(249, 24, 128);
+}
+
+.retweet:hover svg {
+    background-color: rgba(34, 151, 120, 0.13);
+    stroke-width: .5px;
+    stroke: rgb(34, 151, 120);
+    fill: rgb(34, 151, 120);
+}
+
+.retweet:hover {
+    color: rgb(34, 151, 120);
+}
+
+.tweet-interact {
+    max-width: 425px;
+    padding-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.liked {
+    color: rgb(249, 24, 128);
+}
+
+.like.liked svg {
+    fill: rgb(249, 24, 128);
+}
+
+.retweeted {
+    color: rgb(34, 151, 120);
+}
+
+.retweet.retweeted svg {
+    stroke-width: .5px;
+    stroke: rgb(34, 151, 120);
+    fill: rgb(34, 151, 120);
+}

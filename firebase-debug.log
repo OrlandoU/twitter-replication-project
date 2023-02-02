@@ -1,0 +1,35 @@
+[debug] [2023-01-31T19:44:26.222Z] ----------------------------------------------------------------------
+[debug] [2023-01-31T19:44:26.224Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Adeus\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve --only hosting
+[debug] [2023-01-31T19:44:26.225Z] CLI Version:   11.21.0
+[debug] [2023-01-31T19:44:26.225Z] Platform:      win32
+[debug] [2023-01-31T19:44:26.225Z] Node Version:  v18.12.1
+[debug] [2023-01-31T19:44:26.226Z] Time:          Tue Jan 31 2023 13:44:26 GMT-0600 (hora estándar central)
+[debug] [2023-01-31T19:44:26.227Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-01-31T19:44:26.310Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-01-31T19:44:26.311Z] > authorizing via signed-in user (orlandojose729@gmail.com)
+[debug] [2023-01-31T19:44:26.311Z] [iam] checking project twitter-748a1 for permissions ["firebase.projects.get"]
+[debug] [2023-01-31T19:44:26.313Z] > refreshing access token with scopes: []
+[debug] [2023-01-31T19:44:26.315Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-01-31T19:44:26.315Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-01-31T19:44:26.591Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-01-31T19:44:26.591Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-01-31T19:44:26.601Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/twitter-748a1:testIamPermissions [none]
+[debug] [2023-01-31T19:44:26.602Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/twitter-748a1:testIamPermissions x-goog-quota-user=projects/twitter-748a1
+[debug] [2023-01-31T19:44:26.602Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/twitter-748a1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2023-01-31T19:44:26.898Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/twitter-748a1:testIamPermissions 200
+[debug] [2023-01-31T19:44:26.898Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/twitter-748a1:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2023-01-31T19:44:26.899Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 [none]
+[debug] [2023-01-31T19:44:27.632Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 200
+[debug] [2023-01-31T19:44:27.632Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 {"projectId":"twitter-748a1","projectNumber":"147058456352","displayName":"Twitter","name":"projects/twitter-748a1","resources":{"hostingSite":"twitter-748a1","realtimeDatabaseInstance":"twitter-748a1-default-rtdb","storageBucket":"twitter-748a1.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_146e5a78-b660-4c12-b07e-7fd0e4caaff4"}
+[debug] [2023-01-31T19:44:27.634Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/twitter-748a1/sites 
+[debug] [2023-01-31T19:44:28.211Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/twitter-748a1/sites 200
+[debug] [2023-01-31T19:44:28.211Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/twitter-748a1/sites {"sites":[{"name":"projects/twitter-748a1/sites/twita-hn","defaultUrl":"https://twita-hn.web.app","appId":"1:147058456352:web:1e2df483023c19be424945","type":"USER_SITE"},{"name":"projects/twitter-748a1/sites/twitter-748a1","defaultUrl":"https://twitter-748a1.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2023-01-31T19:44:28.211Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1/webApps/-/config [none]
+[debug] [2023-01-31T19:44:29.790Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1/webApps/-/config 200
+[debug] [2023-01-31T19:44:29.790Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1/webApps/-/config {"projectId":"twitter-748a1","appId":"1:147058456352:web:1e2df483023c19be424945","databaseURL":"https://twitter-748a1-default-rtdb.firebaseio.com","storageBucket":"twitter-748a1.appspot.com","locationId":"us-central","apiKey":"AIzaSyATvPrYknRtklwo7mq2N8e4qEQPIPaFLew","authDomain":"twitter-748a1.firebaseapp.com","messagingSenderId":"147058456352"}
+[debug] [2023-01-31T19:44:29.805Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 [none]
+[debug] [2023-01-31T19:44:30.123Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 200
+[debug] [2023-01-31T19:44:30.123Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/twitter-748a1 {"projectId":"twitter-748a1","projectNumber":"147058456352","displayName":"Twitter","name":"projects/twitter-748a1","resources":{"hostingSite":"twitter-748a1","realtimeDatabaseInstance":"twitter-748a1-default-rtdb","storageBucket":"twitter-748a1.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_146e5a78-b660-4c12-b07e-7fd0e4caaff4"}
+[info] i  hosting[twitter-748a1]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting[twitter-748a1]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
