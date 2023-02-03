@@ -16,8 +16,7 @@
 
 main {
   border-right: 1px solid rgb(239, 243, 244);
-  max-width: 600px;
-  flex: 2;
+  width: 600px;
 }
 
 nav {
@@ -217,9 +216,6 @@ li:nth-child(2) .active svg {
     text-align: right;
   }
 
-  .logo {
-    text-align: center;
-  }
 
   nav {
     padding: 10px 20px;

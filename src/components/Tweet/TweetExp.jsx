@@ -144,6 +144,13 @@ function TweetExp() {
                     {tweet.retweeted_by && tweet.retweeted_by.length ? <div className="main-retweets"><span className="bold">{tweet.retweeted_by.length}</span> {tweet.retweeted_by.length > 1 ? "Retweets" : "Retweet"}</div> : null}
                     {tweet.liked_by && tweet.liked_by.length ? <div className="main-likes"><span className="bold">{tweet.liked_by.length}</span> {tweet.liked_by.length > 1 ? 'Likes' : 'Like'}</div> : null}
                 </div>}
+                {tweet.media_url && tweet.media_url.length > 0 && <div className="tweet-media">
+                    {tweet.media_url.map(media => (
+                        <div className="tweet-media-wrapper">
+                            <img src={media} alt="Tweet media" key={media} />
+                        </div>
+                    ))}
+                </div>}
                 <div className="main-tweet-wrapper">
                     <div className="main-tweet-interact">
                         <div className="comment" onClick={handleReply}>

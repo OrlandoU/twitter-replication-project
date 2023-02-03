@@ -113,7 +113,7 @@ function Tweet(props) {
                     </div>
                 )}
                 <div className="tweet-content" ref={ref}>{tweetData.content}</div>
-                {tweetData.media_url && tweetData.media_url.length && <div className="tweet-media">
+                {tweetData.media_url && tweetData.media_url.length > 0 && <div className="tweet-media">
                     {tweetData.media_url.map(media => (
                         <div className="tweet-media-wrapper">
                             <img src={media} alt="Tweet media" key={media} />

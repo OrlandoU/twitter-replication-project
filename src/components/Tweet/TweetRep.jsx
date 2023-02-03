@@ -37,6 +37,13 @@ function TweetRep() {
                 </div>
                 <div className="tweet-write">
                     <ReactTextareaAutosize placeholder='Whats happening?' onInput={updateTweetContent} value={tweetContent} className={'tweet-write-content'} />
+                    {files.length > 1 && <div className="tweet-media">
+                        {files.map(media => (
+                            <div className="tweet-media-wrapper">
+                                <img src={URL.createObjectURL(media)} alt="Tweet media" key={media} />
+                            </div>
+                        ))}
+                    </div>}
                     <div className="tweet-write-options">
                         <div className="write-left-options">
                             <label htmlFor="media-tweet" className='media-tweet'>
