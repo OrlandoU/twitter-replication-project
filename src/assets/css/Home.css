@@ -212,3 +212,23 @@
 .home-tweet-button:not(.disabled):hover{
     background-color: rgba(0, 140, 255, 0.74);
 }
+
+.tweet-media{
+    width: 100%;
+    display: flex;
+    gap: 2px;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.tweet-media-wrapper{
+    width: 100%;
+}
+
+.tweet-media-wrapper img{
+    display: block;
+    aspect-ratio: 4/3;
+    width: 100%;
+    border: 1px solid rgb(240, 240, 240);
+    
+}

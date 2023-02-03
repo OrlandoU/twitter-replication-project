@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { UserContext } from '../../Contexts/UserContext';
 import { browserSessionPersistence, getAuth, setPersistence } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
-import { addDoc, collection, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
 import TweetExp from '../Tweet/TweetExp';
 import stopWords from '../../Stop-Words'
 import { CreateTweetContext } from '../../Contexts/CreateTweetContexts';
@@ -22,12 +22,12 @@ function App() {
   const [user, setUser] = useState()
   const location = useLocation()
 
-  const createTweet = async (content = "Howdy shawty", file, parentId = null, parent_tweet_name = null) => {
+  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null) => {
     try {
       const tweet = await addDoc(collection(getFirestore(), 'tweets'), {
         userId: user.tag,
         username: user.name,
-        media_url:null,
+        media_url: [],
         user_profile_pic: user.profile_pic,
         parent_tweet: parentId,
         parent_tweet_user: parent_tweet_name,
@@ -42,19 +42,18 @@ function App() {
         keywords_arr: content.split(' ').map(word => word.toLowerCase())
       })
 
-      if(file){
+      for(let file of files){
+        console.log(files)
+        let filePath = `tweet-media/${tweet.id}/${file.name}`;
+        let newImageRef = ref(getStorage(), filePath);
+        let fileSnapshot = await uploadBytesResumable(newImageRef, file);
 
-        
-        const filePath = `tweet-media/${tweet.id}/${file.name}`;
-        const newImageRef = ref(getStorage(), filePath);
-        const fileSnapshot = await uploadBytesResumable(newImageRef, file);
-        
-        const publicImageUrl = await getDownloadURL(newImageRef);
-        
+        let publicImageUrl = await getDownloadURL(newImageRef);
+
         // 4 - Update the chat message placeholder with the image's URL.
         await updateDoc(tweet, {
-          media_url: publicImageUrl,
-          storageUri: fileSnapshot.metadata.fullPath
+          media_url: arrayUnion(publicImageUrl),
+          storageUri: arrayUnion(fileSnapshot.metadata.fullPath)
         }); 
       }
     } catch (error) {
