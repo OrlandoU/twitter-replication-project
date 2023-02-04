@@ -7,7 +7,6 @@ import Messages from '../Messages/Messages';
 import Notifications from '../Notifications/Notifications';
 import Profile from '../Profile/Profile';
 import SideBar from './SideBar';
-import RightBar from './RightBar';
 import { useEffect, useState } from 'react';
 import { UserContext } from '../../Contexts/UserContext';
 import { browserSessionPersistence, getAuth, setPersistence } from 'firebase/auth';
@@ -20,15 +19,18 @@ import { CreateTweetContext } from '../../Contexts/CreateTweetContexts';
 
 function App() {
   const [user, setUser] = useState()
+  const [id, setId] = useState(false)
   const location = useLocation()
 
   const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null) => {
+    console.log(id)
+    let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
+    let tweet
     try {
-      const tweet = await addDoc(collection(getFirestore(), 'tweets'), {
-        userId: user.tag,
-        username: user.name,
+        tweet = await addDoc(collection(getFirestore(), 'tweets'), {
+        userId: id,
+        userTag: user.tag,
         media_url: [],
-        user_profile_pic: user.profile_pic,
         parent_tweet: parentId,
         parent_tweet_user: parent_tweet_name,
         direct_child_tweet: null,
@@ -39,11 +41,10 @@ function App() {
         replies_count: 0,
         content: content,
         created_at: new Date().getTime(),
-        keywords_arr: content.split(' ').map(word => word.toLowerCase())
+        keywords_arr: keywords
       })
 
       for(let file of files){
-        console.log(files)
         let filePath = `tweet-media/${tweet.id}/${file.name}`;
         let newImageRef = ref(getStorage(), filePath);
         let fileSnapshot = await uploadBytesResumable(newImageRef, file);
@@ -59,9 +60,13 @@ function App() {
     } catch (error) {
       console.error('Error creating tweet', error)
     }
+    if(parentId){
+      await updateDoc(doc(getFirestore(), 'tweets', parentId), {
+        replied_by: arrayUnion(user.tag)
+      })
+    }
 
 
-    let keywords = content.split(' ').map(word => word.toLowerCase())
     keywords.forEach(async keyword => {
       if (stopWords.includes(keyword)) {
         return
@@ -78,6 +83,7 @@ function App() {
 
     })
     updateParentTweets(parentId)
+    return tweet
   }
 
 
@@ -103,6 +109,7 @@ function App() {
         // ...
         // New sign-in will be persisted with session persistence.
         getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid)).then((userData) => {
+          setId(userData.id)
           setUser(userData.data())
         })
       })
@@ -116,22 +123,21 @@ function App() {
 
   return (
     <div className="App">
-      <UserContext.Provider value={{ user, setUser }}>
+      <UserContext.Provider value={{ user, setUser, id }}>
         <CreateTweetContext.Provider value={createTweet}>
           <SideBar />
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/explore' element={<Explore />} />
             <Route path='/notifications' element={<Notifications />} />
-            <Route path='/messages' element={<Messages />} />
+            <Route path='/messages/:type?/:chatId?' element={<Messages />} />
             <Route path='/bookmarks' element={<Bookmarks />} />
             <Route path='/:profileName' element={<Profile />} />
             <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
           </Routes>
-          <RightBar />
+          
         </CreateTweetContext.Provider>
       </UserContext.Provider>
-
     </div>
   );
 }

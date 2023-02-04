@@ -6,6 +6,7 @@ import { HashRouter } from 'react-router-dom';
 import './assets/css/index.css'
 
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 // Your web app's Firebase configuration
@@ -20,7 +21,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
-
 
 root.render(
   <React.StrictMode>

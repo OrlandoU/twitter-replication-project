@@ -1,23 +1,26 @@
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import '../../assets/css/TweetExp.css'
-import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
 import Tweet from "./Tweet"
+import HTMLReactParser from "html-react-parser";
+import TweetRep from "./TweetRep"
+import UserPreview from "../Main/UserPreview"
+
 
 function TweetExp() {
     const hasMounted = useRef()
     const mainTweetRef = useRef()
     const expRef = useRef()
     const user = useContext(UserContext)
-    const createTweet = useContext(CreateTweetContext)
     const urlParams = useParams()
     const navigate = useNavigate()
     const [tweet, setTweet] = useState({})
     const [tweetId, setTweetId] = useState()
     const [parentTweets, setParentTweets] = useState({})
     const [replies, setReplies] = useState([])
+    const [myReplies, setMyReplies] = useState([])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchMainTweet = async () => {
@@ -46,7 +49,13 @@ function TweetExp() {
 
     const fetchReplies = async () => {
         try {
-            let q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId))
+            let q
+            if (user.user) {
+                q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('replied_by', 'not-in', [user.user.tag]))
+            } else {
+                q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId))
+            }
+
             let tweetReplies = await getDocs(q)
             setReplies(tweetReplies.docs)
         } catch (error) {
@@ -59,16 +68,30 @@ function TweetExp() {
             fetchMainTweet()
             hasMounted.current = true
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        expRef.current.style.minHeight = (window.innerHeight + (Object.keys(parentTweets).length * 120)) + 'px'
+        expRef.current.style.minHeight = (window.innerHeight + (Object.keys(parentTweets).length * 800)) + 'px'
         mainTweetRef.current.scrollIntoView({ block: 'start' })
     }, [parentTweets])
 
+    useEffect(() => {
+        if (user.user) {
+            try {
+                onSnapshot(query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('userId', '==', user.user.tag)), (data) => {
+                    let dataCopy = data.docs.sort((a, b) => b.data().created_at - a.data().created_at)
+                    setMyReplies(dataCopy)
+                })
+            } catch (error) {
+                console.error('Error updating comment', error)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user.user])
+
     const handleReply = (e) => {
         e.stopPropagation()
-        createTweet(`This is a reply sent by ${user.user.name}`, tweetId, tweet.userId)
     }
 
     const handleLike = async (e) => {
@@ -123,27 +146,23 @@ function TweetExp() {
                 .map(key => (
                     <Tweet tweetData={parentTweets[key].data} id={parentTweets[key].id} isParent key={key} />
                 ))}
-
-            <div className="main-tweet" ref={mainTweetRef}>
-                <div className="main-tweet-header">
-                    <img src={tweet.user_profile_pic} alt="User Profile" className="tweet-profile-pic" />
-                    <div className="main-tweet-names">
-                        <div className="main-tweet-name tweet-username">{tweet.username}</div>
-                        <div className="main-tweet-tag tweet-usertag">{tweet.userId}</div>
-                    </div>
-                    <div className="options"></div>
-                </div>
+            <UserPreview 
+            id={tweet.userId}
+            time={tweet.created_at}
+            ref={mainTweetRef}
+            main>
                 {tweet.parent_tweet_user && (
                     <div className="tweet-replied">
                         Replying to <a href="youtube.com">{tweet.parent_tweet_user}</a>
                     </div>
                 )}
-                <div className="main-tweet-main-content">{tweet.content}</div>
-                {(tweet.replied_by && (tweet.replied_by.length > 0 || tweet.retweeted_by.length > 0 || tweet.liked_by.length > 0)) && <div className="main-tweet-meta">
-                    {tweet.replies_count ? <div className="main-replies"><span className="bold">{tweet.replies_count}</span> {tweet.replies_count > 1 ? 'Replies' : 'Reply'}</div> : null}
-                    {tweet.retweeted_by && tweet.retweeted_by.length ? <div className="main-retweets"><span className="bold">{tweet.retweeted_by.length}</span> {tweet.retweeted_by.length > 1 ? "Retweets" : "Retweet"}</div> : null}
-                    {tweet.liked_by && tweet.liked_by.length ? <div className="main-likes"><span className="bold">{tweet.liked_by.length}</span> {tweet.liked_by.length > 1 ? 'Likes' : 'Like'}</div> : null}
-                </div>}
+                <div className="main-tweet-main-content">{tweet.content ? HTMLReactParser(tweet.content) : null}</div>
+                {((tweet.replied_by || tweet.retweeted_by || tweet.liked_by) && (tweet.replied_by.length > 0 || tweet.retweeted_by.length > 0 || tweet.liked_by.length > 0))
+                    && <div className="main-tweet-meta">
+                        {tweet.replies_count ? <div className="main-replies"><span className="bold">{tweet.replies_count}</span> {tweet.replies_count > 1 ? 'Replies' : 'Reply'}</div> : null}
+                        {tweet.retweeted_by && tweet.retweeted_by.length ? <div className="main-retweets"><span className="bold">{tweet.retweeted_by.length}</span> {tweet.retweeted_by.length > 1 ? "Retweets" : "Retweet"}</div> : null}
+                        {tweet.liked_by && tweet.liked_by.length ? <div className="main-likes"><span className="bold">{tweet.liked_by.length}</span> {tweet.liked_by.length > 1 ? 'Likes' : 'Like'}</div> : null}
+                    </div>}
                 {tweet.media_url && tweet.media_url.length > 0 && <div className="tweet-media">
                     {tweet.media_url.map(media => (
                         <div className="tweet-media-wrapper">
@@ -162,12 +181,22 @@ function TweetExp() {
                             {tweet.retweeted_by && (tweet.retweeted_by.length || '')}
                         </div>
                         <div onClick={handleLike} class={isLiked() ? 'liked like' : 'like'}>
-                            {!isLiked() ? <svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg> : <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi"><g><path d="M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>}
+                            {isLiked() ? <div class="liked like-button">
+                                <div class="heart-bg">
+                                    <div class={!isLiked() ? "heart-icon" : "liked heart-icon"}></div>
+                                </div>
+                            </div> : <svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>}
+
 
                         </div>
                     </div>
                 </div>
-            </div>
+            </UserPreview>
+            
+            {user.user && <TweetRep parentId={tweetId} parentName={tweet.userTag} />}
+            {myReplies.map(tweet => (
+                <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
+            ))}
             {replies.map(tweet => (
                 <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
             ))}

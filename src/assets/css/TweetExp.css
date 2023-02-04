@@ -134,3 +134,50 @@
 .tweet-parent{
     border: 0px;
 }
+
+.reply-write{
+    padding-top: 0px;
+}
+
+.like-button .heart-icon {
+    height: 100px;
+    width: 100px;
+    background: url("../imgs/heart.png");
+    background-position: left;
+    cursor: pointer;
+    position: absolute;
+}
+
+.like-button .heart-icon.liked {
+    animation: like-anim 0.7s steps(28) forwards;
+}
+
+@keyframes like-anim {
+    to {
+        background-position: right;
+    }
+}
+
+.like-button .heart-bg {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 100ms ease;
+}
+
+.main-tweet .heart-bg{
+    height: 35px;
+    width: 35px;
+}
+
+.like-button .heart-bg:hover {
+    background: rgba(249, 24, 129, 0.116);
+}
+
+.like-button {
+    display: flex;
+    align-items: center;
+}

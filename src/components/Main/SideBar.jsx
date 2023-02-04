@@ -1,9 +1,6 @@
-import { useContext } from "react"
 import { NavLink } from "react-router-dom"
-import { UserContext } from "../../Contexts/UserContext"
 
 function SideBar() {
-    const user = useContext(UserContext)
 
     return (
         <nav>

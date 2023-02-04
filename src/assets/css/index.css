@@ -3,10 +3,10 @@ body {
   
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 *{
   box-sizing: border-box;
-  font-family: 'Source Sans Pro', sans-serif;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

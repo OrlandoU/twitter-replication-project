@@ -1,0 +1,36 @@
+.chats{
+    border-right: 1px solid rgb(239, 243, 244);
+}
+.messages-container{
+    flex: 1;
+}
+.message-input-container{
+    display: flex;
+    gap: 4px;
+    margin: 5px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.message-input{
+    background-color: gainsboro;
+    border: none;
+    outline: 0px;
+    font-size: 1.1rem;
+    padding: 5px 10px;
+    width: 100%;
+}
+
+.send-message{
+    border: none;
+    outline: none;
+    color: white;
+    padding: 2px 8px;
+    font-family: 'Roboto', sans-serif;
+    background-color: royalblue;
+    font-weight: 600;
+}
+
+.messages-main{
+    display: flex;
+    flex-direction: column;
+}

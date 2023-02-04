@@ -12,18 +12,21 @@ function Signin() {
     const [password, setPassword] = useState('')
 
     const createUser = async () => {
-        let newUser = {
-            tag,
-            email,
-            name,
-            profile_pic: 'https://i.pinimg.com/736x/35/99/27/359927d1398df943a13c227ae0468357.jpg',
-            created_at: new Date().getTime()
-        }
 
         if (!isLogin) {
             try {
                 await createUserWithEmailAndPassword(getAuth(), email, password)
-                setDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid), newUser)
+                setDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid), {
+                    tag,
+                    email,
+                    name,
+                    followers: [],
+                    followers_count: 0,
+                    name_substring: name.split('').map((el, index)=>name.slice(0, index + 1).toLowerCase()),
+                    profile_pic: 'https://i.pinimg.com/736x/35/99/27/359927d1398df943a13c227ae0468357.jpg',
+                    created_at: new Date().getTime(),
+                    id: getAuth().currentUser.uid
+                })
                 user.setUser(getAuth().currentUser)
             } catch (error) {
                 console.error('Error creating user', error)

@@ -73,6 +73,14 @@
     transition: 100ms;
 }
 
+.heart-icon {
+    transform: scaleY(.5) scaleX(.6);
+}
+
+.main-tweet .heart-icon {
+    transform: scaleY(.6) scaleX(.7);
+}
+
 .tweet-interact>* {
     color: rgb(83, 100, 113);
     display: flex;
@@ -125,6 +133,9 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+    font-weight: 900;
+    color: #888;
+    font-family: 'Roboto', sans-serif;
 }
 
 .liked {
@@ -145,8 +156,9 @@
     fill: rgb(34, 151, 120);
 }
 
-.tweet:not(.return-tweet-exp):not(.home-write):hover {
+.tweet:not(.return-tweet-exp):not(.home-write):not(.reply-write):hover {
     background-color: rgb(248, 244, 244);
+    cursor: pointer;
 }
 
 .write-left-options {
@@ -161,13 +173,15 @@
 }
 
 .tweet-write-content {
-    padding: 10px 0px 10px 0px;
+    margin: 0px;
+    padding: 10px 0px 0px 0px;
     min-height: 48px;
     text-align: left;
     border: 0px;
     width: 100%;
     resize: none;
     outline: 0px;
+    white-space: pre-line;
     font-size: 1.5rem;
 }
 
@@ -180,13 +194,14 @@
     display: flex;
 }
 
-.media-tweet{
+.media-tweet {
     display: flex;
     width: fit-content;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     padding: 10px;
+    position: relative;
 }
 
 .media-tweet:hover {
@@ -209,26 +224,59 @@
     background-color: rgb(136, 199, 250);
 }
 
-.home-tweet-button:not(.disabled):hover{
+.home-tweet-button:not(.disabled):hover {
     background-color: rgba(0, 140, 255, 0.74);
 }
 
-.tweet-media{
-    width: 100%;
+.tweet-media {
+    width: fit-content;
     display: flex;
     gap: 2px;
     overflow: hidden;
     border-radius: 16px;
+    border: 1px solid rgb(230, 230, 230);
 }
 
-.tweet-media-wrapper{
-    width: 100%;
+.tweet-media-wrapper {
+    width: fit-content;
 }
 
-.tweet-media-wrapper img{
+.tweet-media-wrapper img {
     display: block;
-    aspect-ratio: 4/3;
-    width: 100%;
-    border: 1px solid rgb(240, 240, 240);
-    
+    max-width: 100%;
+    max-height: 510px;
+}
+
+.EmojiPickerReact {
+    position: absolute !important;
+    top: 0 !important;
+    left: 100%;
+    box-shadow: 0px 0px 10px gainsboro;
+}
+
+.emoji {
+    height: 18px;
+    margin-bottom: -3px;
+}
+
+.home-write .emoji {
+    height: 24px;
+}
+
+.main-tweet .emoji {
+    height: 28px;
+    margin-bottom: -6px;
+}
+
+.grayed-text:hover {
+    user-select: none;
+}
+
+.empty-tweet::after {
+    content: "What's Happening?";
+    color: gray;
+}
+
+.reply-write .empty-tweet::after {
+    content: 'Tweet your reply';
 }
