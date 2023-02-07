@@ -16,18 +16,20 @@ function Signin() {
         if (!isLogin) {
             try {
                 await createUserWithEmailAndPassword(getAuth(), email, password)
-                setDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid), {
+                 setDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid), {
                     tag,
                     email,
                     name,
                     followers: [],
+                    tag_substring: tag.split('').map((el, index) => name.slice(0, index + 1).toLowerCase()),
                     followers_count: 0,
                     name_substring: name.split('').map((el, index)=>name.slice(0, index + 1).toLowerCase()),
                     profile_pic: 'https://i.pinimg.com/736x/35/99/27/359927d1398df943a13c227ae0468357.jpg',
                     created_at: new Date().getTime(),
                     id: getAuth().currentUser.uid
                 })
-                user.setUser(getAuth().currentUser)
+                let userData = await getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid))
+                user.setUser(userData.data())
             } catch (error) {
                 console.error('Error creating user', error)
             }
@@ -81,7 +83,7 @@ function Signin() {
                 <form onSubmit={handleForm}>
                     <label htmlFor="">
                         usertag
-                        <input onChange={handleTagChange} type="text" value={tag} required />
+                        <input onChange={handleTagChange} type="text" value={tag} required pattern="^[a-zA-Z0-9_]*$" title="Match the pattern"/>
                     </label>
 
                     <label htmlFor="">
@@ -104,11 +106,11 @@ function Signin() {
                 <form onSubmit={handleForm}>
                     <label htmlFor="">
                         email
-                        <input onChange={handleEmailChange} type="email" value={email} required />
+                        <input onChange={handleEmailChange} type="email" value={email} required autoComplete="true"/>
                     </label>
                     <label htmlFor="">
                         password
-                        <input onChange={handlePassChange} type="password" value={password} required />
+                        <input onChange={handlePassChange} type="password" value={password} required autoComplete="true"/>
                     </label>
                     <button>Submit</button>
                     <button type="button" onClick={() => setIsLogin(false)}>Signup</button>

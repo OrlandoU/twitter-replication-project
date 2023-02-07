@@ -1,12 +1,13 @@
 import EmojiPicker from "emoji-picker-react"
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
-import twemoji from "twemoji"
+import { Mention, MentionsInput } from "react-mentions"
 import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
+import UserPreview from "../Main/UserPreview"
 
 function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
     const [emojiModal, setEmojiModal] = useState(false)
-    const [clicked, setClicked] = useState(false)
     const user = useContext(UserContext)
     const textareaRef = useRef()
     const savedSelectionRef = useRef(null);
@@ -19,61 +20,22 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
         setEmojiModal(true)
     }
 
-    const handleCursor = (event) => {
-        if (event.target.tagName === 'IMG') {
-            const imageRect = event.target.getBoundingClientRect();
-            const mouseX = event.clientX;
-
-            const range = document.createRange();
-            if (mouseX - imageRect.left < imageRect.width / 2) {
-                range.setStartBefore(event.target);
-            } else {
-                range.setStartAfter(event.target);
-            }
-            range.collapse(true);
-
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-
-            textareaRef.current.focus();
-        }
+    const savePosition = () => {
+        savedSelectionRef.current = textareaRef.current.selectionStart
     }
 
-    const handleP = (e) => {
-        console.log(e.nativeEvent)
-        const mentions = e.target.innerHTML.match(/^@\w+/g);
-
-        if (!mentions) {
-            return;
+    const fetchUser = async (search, cb) => {
+        const q = query(collection(getFirestore(), 'users'), where('tag_substring', 'array-contains', search))
+        const users = await getDocs(q)
+        cb(users.docs.map(user => {
+            return { ...user.data(), id:user.data().tag, display: user.data().tag, originalId: user.data().id }
         }
+        ))
+    }
 
-        mentions.forEach(function (mention) {
-            const link = document.createElement('a');
-            link.href = '/' + mention.slice(1);
-            link.innerHTML = mention;
-            link.contentEditable = true;
-
-            link.addEventListener('input', function () {
-                link.href = '/' + link.innerHTML.slice(1);
-            });
-
-            e.target.innerHTML = e.target.innerHTML.replace(mention, link.outerHTML);
-        });
-
-        const lastMention = mentions[mentions.length - 1];
-        const link = e.target.querySelector('a[href="/' + lastMention.slice(1) + '"]');
-
-        const range = document.createRange();
-        const selection = window.getSelection();
-
-        range.setStart(link.firstChild, 1);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        savedSelectionRef.current = window.getSelection().getRangeAt(0).cloneRange();
-        setTweetContent(e.target.innerHTML)
+    const handleChange = (event, newValue, newPlainTextValue, mentions) => {
+        console.log(mentions)
+        setTweetContent(event.target.value)
     }
 
     const handleClick = async () => {
@@ -93,28 +55,26 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
         }
     }
 
-    console.log(tweetContent)
 
     const handleEmoji = ((emoji) => {
-        const selection = window.getSelection();
-        const range = savedSelectionRef.current.cloneRange();
-
-        const emojiContainer = document.createElement("span");
-        emojiContainer.innerHTML = twemoji.parse(emoji.emoji);
-
-        range.insertNode(emojiContainer);
-        range.setStartAfter(emojiContainer);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        setTweetContent(textareaRef.current.innerHTML)
+        setTweetContent(prev=>{
+            let newVal = [...prev].slice(0, savedSelectionRef.current).join('') + emoji.emoji + [...prev].slice(savedSelectionRef.current).join('')
+            savedSelectionRef.current++
+            return newVal
+        })
     })
 
+    const handleSuggestion = (entry) => {
+        console.log(entry)
+        return <UserPreview data={{...entry, id:entry.originalId}} className={'suggestion'} />
+    }
 
+    const handleDisplay = (id, display) => {
+        return '@' + display
+    }
 
-    const handleFocus = () => {
-        setClicked(true)
+    const handleContainer = (e)=>{
+        return <div className="suggestion-container">{e}</div>
     }
 
     useEffect(() => {
@@ -128,16 +88,33 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
 
     return (
         <>
-            {(clicked && parentId) &&
+            {(parentId) &&
                 <div className="tweet-replied" style={{ padding: '12px 0px 0px 72px' }}>
-                    Replying to <a href="youtube.com">{parentName}</a>
+                    Replying to <a href={`#/${parentName}`} className="tag">@{parentName}</a>
                 </div>}
             {user.user && <div className={!parentId ? "tweet home-write" : "tweet reply-write"}>
                 <div className="side-tweet">
                     <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
                 </div>
-                <div className="tweet-write">
-                    <p ref={textareaRef} className={!tweetContent ? 'empty-tweet tweet-write-content' : 'tweet-write-content'} onInput={handleP} onClick={handleCursor} onFocus={handleFocus} contentEditable onBlur={handleP} ></p>
+                <div className="tweet-write" onClick={()=>textareaRef.current.focus()}>
+                    <MentionsInput
+                        value={tweetContent}
+                        onChange={handleChange}
+                        customSuggestionsContainer={handleContainer}
+                        inputRef={textareaRef}
+                        className='tweet-write-content'
+                        placeholder="Write a message"
+                        onBlur={savePosition}
+                        autoFocus>
+                        <Mention
+                            trigger="@"
+                            data={fetchUser}
+                            renderSuggestion={handleSuggestion}
+                            displayTransform={handleDisplay}
+                            className={'tag'}
+                            markup={'<a href="#/__display__" class=tag>@__id__</a>'}
+                        />
+                    </MentionsInput>
                     {files.length > 0 && <div className="tweet-media">
                         {files.map(media => (
                             <div className="tweet-media-wrapper">
@@ -145,7 +122,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                             </div>
                         ))}
                     </div>}
-                    {(clicked || !parentId) &&
+                    {(!parentId) &&
                         <div className="tweet-write-options">
                             <div className="write-left-options">
                                 <label htmlFor="media-tweet" className='media-tweet'>

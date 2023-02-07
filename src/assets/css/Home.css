@@ -8,6 +8,11 @@
     background-color: white;
 }
 
+.tweet-write-content .tweet-header {
+    flex-direction: column;
+    gap: 0px;
+}
+
 .main-tweet-content {
     flex: 1;
     display: flex;
@@ -22,6 +27,23 @@
     border-bottom: 1px solid rgb(239, 243, 244);
     transition: 200ms;
 }
+
+.suggestion {
+    padding: 12px 12px 5px 12px;
+    display: flex;
+    gap: 12px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+    transition: 200ms;
+}
+
+.suggestion-container {
+    position: relative;
+    min-width: 400px;
+    background-color: white;
+    border: 1px solid #888;
+    z-index: 2;
+}
+
 
 .tweet-profile-pic {
     height: 48px;
@@ -39,6 +61,7 @@
 
 .tweet-usertag {
     color: rgb(83, 100, 113);
+    font-size: 1.05rem;
 }
 
 .tweet-timestamp {
@@ -55,8 +78,26 @@
     text-align: start;
 }
 
-.tweet-replied a {
+.tweet-replied a {}
+
+
+
+.tag {
+    position: relative;
     color: rgb(0, 174, 255);
+    text-decoration: none;
+    z-index: 0;
+}
+
+.tweet-write-content .tag {
+    position: relative;
+    z-index: 1;
+    color: rgb(0, 174, 255);
+    text-decoration: none;
+}
+
+.tweet-write-content__highlighter {
+    border: 2px solid transparent !important;
 }
 
 .tweet-content {
@@ -174,7 +215,8 @@
 
 .tweet-write-content {
     margin: 0px;
-    padding: 10px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    margin-top: 8px;
     min-height: 48px;
     text-align: left;
     border: 0px;
@@ -249,6 +291,7 @@
 }
 
 .tweet-write .EmojiPickerReact {
+    z-index: 1;
     position: absolute !important;
     top: 0 !important;
     left: 100%;

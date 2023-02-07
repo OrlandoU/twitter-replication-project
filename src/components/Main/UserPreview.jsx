@@ -2,7 +2,7 @@ import { doc, getDoc, getFirestore } from "firebase/firestore"
 import { forwardRef, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb }, ref) => {
+const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data }, ref) => {
     const [user, setUser] = useState({})
     const navigate = useNavigate()
 
@@ -31,14 +31,19 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
     }
 
     const handleClick = () => {
-        if (!path){
-            cb(id)
+        if (!path) {
+            if (cb) cb(id)
         }
         navigate(path)
     }
 
     useEffect(() => {
-        fetchUser(id)
+        if (data) {
+            console.log(data)
+            setUser(data)
+        } else {
+            fetchUser(id)
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -53,7 +58,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                         <div className="main-tweet-content">
                             <div className={"tweet-header"}>
                                 <div className="tweet-username">{user.name}</div>
-                                <div className="tweet-usertag">{user.tag}</div>
+                                <div className="tweet-usertag">@{user.tag}</div>
                                 {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
                             </div>
                             {children}
@@ -63,7 +68,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                             <img src={user.profile_pic} alt="User Profile" className="tweet-profile-pic" />
                             <div className="main-tweet-names">
                                 <div className="main-tweet-name tweet-username">{user.name}</div>
-                                <div className="main-tweet-tag tweet-usertag">{user.tag}</div>
+                                <div className="main-tweet-tag tweet-usertag">@{user.tag}</div>
                             </div>
                             <div className="options"></div>
                         </div>

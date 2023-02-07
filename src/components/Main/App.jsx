@@ -138,7 +138,7 @@ function App() {
             <Route path='/notifications' element={<Notifications />} />
             <Route path='/messages/:type?/:chatId?' element={<Messages />} />
             <Route path='/bookmarks' element={<Bookmarks />} />
-            <Route path='/:profileName' element={<Profile />} />
+            <Route path='/:profileTag' element={<Profile key={location.pathname} />} />
             <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
           </Routes>
           

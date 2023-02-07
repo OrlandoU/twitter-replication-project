@@ -96,12 +96,12 @@ function Tweet({tweetData, index = 0, id, isParent}) {
     return (
         <UserPreview
             className={isParent ? "tweet tweet-parent" : 'tweet'}
-            path={`/${tweetData.userId}/status/${id}`}
+            path={`/${tweetData.userTag}/status/${id}`}
             id={tweetData.userId}
             time={tweetData.created_at}>
             {(tweetData.parent_tweet_user && (index === 0)) && (
                 <div className="tweet-replied">
-                    Replying to <a href="youtube.com">{tweetData.parent_tweet_user}</a>
+                    Replying to <a href={`#/${tweetData.parent_tweet_user}`} className="tag">@{tweetData.parent_tweet_user}</a>
                 </div>
             )}
             <div className="tweet-content" ref={ref}>{HTMLReactParser(tweetData.content)}</div>

@@ -1,7 +1,10 @@
 .App {
   --font-color: #282c34;
 }
-
+textarea{
+  outline: none;
+  border: none;
+}
 .App {
   text-align: center;
   display: flex;

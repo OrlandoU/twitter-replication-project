@@ -158,7 +158,7 @@ function TweetExp() {
                 main>
                 {tweet.parent_tweet_user && (
                     <div className="tweet-replied">
-                        Replying to <a href="youtube.com">{tweet.parent_tweet_user}</a>
+                        Replying to <a className="tag" href={`#/${tweet.parent_tweet_user}`}>{tweet.parent_tweet_user}</a>
                     </div>
                 )}
                 <div className="main-tweet-main-content">{tweet.content ? HTMLReactParser(tweet.content) : null}</div>
