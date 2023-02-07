@@ -19,24 +19,25 @@ import { CreateTweetContext } from '../../Contexts/CreateTweetContexts';
 
 function App() {
   const [user, setUser] = useState()
-  const [id, setId] = useState(false)
   const location = useLocation()
 
-  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null) => {
-    console.log(id)
+  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser=null) => {
     let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
     let tweet
     try {
         tweet = await addDoc(collection(getFirestore(), 'tweets'), {
-        userId: id,
+        userId: user.id,
         userTag: user.tag,
         media_url: [],
         parent_tweet: parentId,
         parent_tweet_user: parent_tweet_name,
-        direct_child_tweet: null,
+        thread_children: [],
+        thread_size: 0,
         retweeted_by: [],
         viewers: [],
+        views: 0,
         liked_by: [],
+        likes: 0,
         replied_by: [],
         replies_count: 0,
         content: content,
@@ -54,17 +55,21 @@ function App() {
         // 4 - Update the chat message placeholder with the image's URL.
         await updateDoc(tweet, {
           media_url: arrayUnion(publicImageUrl),
-          storageUri: arrayUnion(fileSnapshot.metadata.fullPath)
+          storageUri: arrayUnion(fileSnapshot.metadata.fullPath),
+
         }); 
+      }
+
+      if (parentId) {
+        await updateDoc(doc(getFirestore(), 'tweets', parentId), {
+          replied_by: arrayUnion(user.tag),
+          thread_children: (parent_tweet_name === user.tag || ancestorUser === user.tag) ? arrayUnion(tweet.id): arrayUnion()
+        })
       }
     } catch (error) {
       console.error('Error creating tweet', error)
     }
-    if(parentId){
-      await updateDoc(doc(getFirestore(), 'tweets', parentId), {
-        replied_by: arrayUnion(user.tag)
-      })
-    }
+    
 
 
     keywords.forEach(async keyword => {
@@ -86,13 +91,14 @@ function App() {
     return tweet
   }
 
-
+  let size = 1
   const updateParentTweets = async (id) => {
     if (!id) return
     try {
       let tweetData = await getDoc(doc(getFirestore(), 'tweets', id))
-      updateDoc(doc(getFirestore(), 'tweets', id), {
-        replies_count: increment(1)
+      await updateDoc(tweetData.ref, {
+        replies_count: increment(1),
+        thread_size: tweetData.data().thread_children.length && tweetData.data().thread_size < size ? size++ : tweetData.data().thread_size
       })
       updateParentTweets(tweetData.data().parent_tweet)
     } catch (error) {
@@ -109,7 +115,7 @@ function App() {
         // ...
         // New sign-in will be persisted with session persistence.
         getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid)).then((userData) => {
-          setId(userData.id)
+          console.log(userData.id)
           setUser(userData.data())
         })
       })
@@ -123,7 +129,7 @@ function App() {
 
   return (
     <div className="App">
-      <UserContext.Provider value={{ user, setUser, id }}>
+      <UserContext.Provider value={{ user, setUser }}>
         <CreateTweetContext.Provider value={createTweet}>
           <SideBar />
           <Routes>

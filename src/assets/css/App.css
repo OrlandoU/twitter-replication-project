@@ -17,6 +17,8 @@
 main {
   border-right: 1px solid rgb(239, 243, 244);
   width: 600px;
+  flex-direction: column;
+  display: flex;
 }
 
 nav {
@@ -265,4 +267,8 @@ li:nth-child(2) .active svg {
   100%{
     transform: rotate(1080deg);
   }
+}
+
+.emoji{
+  padding: 0px 1px;
 }

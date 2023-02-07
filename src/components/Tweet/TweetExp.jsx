@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, limit, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import '../../assets/css/TweetExp.css'
@@ -7,6 +7,8 @@ import Tweet from "./Tweet"
 import HTMLReactParser from "html-react-parser";
 import TweetRep from "./TweetRep"
 import UserPreview from "../Main/UserPreview"
+import Loader from "../Loader"
+import Thread from "./Thread"
 
 
 function TweetExp() {
@@ -21,13 +23,15 @@ function TweetExp() {
     const [parentTweets, setParentTweets] = useState({})
     const [replies, setReplies] = useState([])
     const [myReplies, setMyReplies] = useState([])
+    const [loaded, setLoaded] = useState(false)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchMainTweet = async () => {
         let tweet = await getDoc(doc(getFirestore(), 'tweets', urlParams.tweetId))
         onSnapshot(doc(getFirestore(), 'tweets', urlParams.tweetId), (data) => setTweet(data.data()))
         fetchParentTweets(tweet.data().parent_tweet)
-        fetchReplies()
+        fetchReplies(tweet.data().userTag)
+        fetchMyReplies(tweet.data().userTag)
         setTweetId(tweet.id)
         setTweet(tweet.data())
     }
@@ -47,17 +51,23 @@ function TweetExp() {
         }
     }
 
-    const fetchReplies = async () => {
+    const fetchReplies = async (id) => {
         try {
-            let q
-            if (user.user) {
-                q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('replied_by', 'not-in', [user.user.tag]))
-            } else {
-                q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId))
-            }
-
+            let q = query(collection(getFirestore(), 'tweets'), orderBy('userTag'), orderBy('thread_size', 'desc'), orderBy('likes', 'desc'), orderBy('views', 'desc'), where('parent_tweet', '==', urlParams.tweetId), where('userTag', '!=', id), limit(20))
             let tweetReplies = await getDocs(q)
             setReplies(tweetReplies.docs)
+            setLoaded(true)
+        } catch (error) {
+            console.error('Error fetching tweet replies', error)
+        }
+    }
+
+    const fetchMyReplies = async (id) => {
+        try {
+            let q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('userTag', '==', id), orderBy('created_at'))
+            let tweet = await getDocs(q)
+            setMyReplies(tweet.docs)
+            onSnapshot(q, (data)=>(setMyReplies(data.docs)))
         } catch (error) {
             console.error('Error fetching tweet replies', error)
         }
@@ -72,23 +82,10 @@ function TweetExp() {
     }, [])
 
     useEffect(() => {
+        if (!loaded) return
         expRef.current.style.minHeight = (window.innerHeight + (Object.keys(parentTweets).length * 800)) + 'px'
         mainTweetRef.current.scrollIntoView({ block: 'start' })
-    }, [parentTweets])
-
-    useEffect(() => {
-        if (user.user) {
-            try {
-                onSnapshot(query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('userId', '==', user.user.tag)), (data) => {
-                    let dataCopy = data.docs.sort((a, b) => b.data().created_at - a.data().created_at)
-                    setMyReplies(dataCopy)
-                })
-            } catch (error) {
-                console.error('Error updating comment', error)
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.user])
+    }, [loaded, parentTweets])
 
     const handleReply = (e) => {
         e.stopPropagation()
@@ -131,6 +128,14 @@ function TweetExp() {
         if (!user.user || !tweet.retweeted_by) return false
         return tweet.retweeted_by.includes(user.user.tag)
     }
+    if (!loaded) {
+        return (
+            <main>
+                <Loader />
+
+            </main>
+        )
+    }
 
     return (
         <main className="tweet-exp" ref={expRef}>
@@ -146,11 +151,11 @@ function TweetExp() {
                 .map(key => (
                     <Tweet tweetData={parentTweets[key].data} id={parentTweets[key].id} isParent key={key} />
                 ))}
-            <UserPreview 
-            id={tweet.userId}
-            time={tweet.created_at}
-            ref={mainTweetRef}
-            main>
+            <UserPreview
+                id={tweet.userId}
+                time={tweet.created_at}
+                ref={mainTweetRef}
+                main>
                 {tweet.parent_tweet_user && (
                     <div className="tweet-replied">
                         Replying to <a href="youtube.com">{tweet.parent_tweet_user}</a>
@@ -192,13 +197,10 @@ function TweetExp() {
                     </div>
                 </div>
             </UserPreview>
-            
-            {user.user && <TweetRep parentId={tweetId} parentName={tweet.userTag} />}
-            {myReplies.map(tweet => (
-                <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
-            ))}
-            {replies.map(tweet => (
-                <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
+
+            {user.user && <TweetRep parentId={tweetId} parentName={tweet.userTag} ancestorUser={tweet.parent_tweet_user} />}
+            {myReplies.concat(replies).map(tweet => (
+                tweet.data().thread_children.length ? <Thread thread={tweet.id} /> : <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
             ))}
         </main>
     )

@@ -1,28 +1,14 @@
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { collection, getDocs, getFirestore, onSnapshot, orderBy, query, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import Loader from "../Loader"
+import Message from "./Message"
+import MessageBox from "./MessageBox"
 
 function Chat() {
-    const [messageContent, setMessageContent] = useState('')
     const [messages, setMessages] = useState([])
+    const [loaded, setLoaded] = useState(false)
     const url = useParams()
-
-    const handleChange = (e) => {
-        setMessageContent(e.currentTarget.value)
-    }
-
-    const createMessage = async () => {
-        let timestamp = new Date().getTime()
-        await addDoc(collection(getFirestore(), 'messages'), {
-            chat_id: url.chatId,
-            content: messageContent,
-            created_at: timestamp
-        })
-
-        await updateDoc(doc(getFirestore(), 'chats', url.chatId),
-            { updated_at: timestamp }
-        )
-    }
 
     const fetchMessages = async (id) => {
         const q = query(collection(getFirestore(), 'messages'), where('chat_id', '==', id), orderBy('created_at', 'desc'))
@@ -31,6 +17,7 @@ function Chat() {
         onSnapshot(q, (data) => {
             setMessages([...data.docs.reverse()])
         })
+        setLoaded(true)
     }
 
     useEffect(() => {
@@ -42,17 +29,19 @@ function Chat() {
 
     return (
         <main className="messages-main">
-            <div className="messages-container">
-                {messages.map(message => (
-                    <div>
-                        {message.data().content}
+            {loaded ?
+                <>
+                    <div className="messages-container">
+                        {messages.map(message => (
+                            <Message message={message.data()} />
+                        ))}
                     </div>
-                ))}
-            </div>
-            <div className="message-input-container">
-                <input value={messageContent} type="text" className="message-input" onChange={handleChange} />
-                <button className="send-message" onClick={createMessage}>Send</button>
-            </div>
+                    <div className="message-input-container">
+                        <MessageBox />
+                    </div>
+                </>
+                :
+                <Loader />}
         </main>
     )
 }

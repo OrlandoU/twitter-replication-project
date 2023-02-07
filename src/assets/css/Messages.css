@@ -1,26 +1,19 @@
-.chats{
+.chats {
     border-right: 1px solid rgb(239, 243, 244);
 }
-.messages-container{
+
+.messages-container {
     flex: 1;
 }
-.message-input-container{
-    display: flex;
+
+.message-input-container {
     gap: 4px;
     margin: 5px;
     border-radius: 10px;
-    overflow: hidden;
-}
-.message-input{
-    background-color: gainsboro;
-    border: none;
-    outline: 0px;
-    font-size: 1.1rem;
-    padding: 5px 10px;
-    width: 100%;
 }
 
-.send-message{
+
+.send-message {
     border: none;
     outline: none;
     color: white;
@@ -30,7 +23,103 @@
     font-weight: 600;
 }
 
-.messages-main{
+.messages-main {
     display: flex;
     flex-direction: column;
+}
+
+.message-write {
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    background-color: rgb(239, 243, 244);
+}
+
+.empty-message::after {
+    content: "Write a message";
+    color: gray;
+}
+
+.message-write .EmojiPickerReact {
+    position: absolute !important;
+    bottom: 120% !important;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0px 0px 10px gainsboro;
+}
+
+
+
+.media-message {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+}
+
+.media-message:hover {
+    background-color: rgba(0, 140, 255, 0.116);
+}
+
+.message-write-content {
+    margin: 0px;
+    min-height: 20px;
+    text-align: left;
+    border: 0px;
+    width: 100%;
+    resize: none;
+    outline: 0px;
+    white-space: pre-line;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.message-write-options {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+.media-message svg {
+    transition: 100ms;
+}
+
+.disabled-button {
+    filter: grayscale(.7);
+}
+
+.message-other {
+    padding: 12px 12px 5px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+    transition: 200ms;
+    align-items: flex-start;
+}
+
+.message-mine {
+    align-items: flex-end;
+    padding: 12px 12px 5px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+    transition: 200ms;
+}
+.message-content{
+    padding: 12px 16px;
+}
+.message-mine .message-content{
+    background-color: rgb(29, 155, 240);
+    color: white;
+    border-top-right-radius: 30px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
 }

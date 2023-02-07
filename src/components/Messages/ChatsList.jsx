@@ -1,21 +1,24 @@
-import { addDoc, collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore"
+import { collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useState } from "react"
-import { Link, NavLink } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
 import UserPreview from "../Main/UserPreview"
+import Loader from '../Loader'
 
 function ChatsList() {
     const [chats, setChats] = useState([])
     const [input, setInput] = useState('')
     const [queried, setQueried] = useState([])
-    const id = useContext(UserContext).id
+    const [loaded, setLoaded] = useState(false)
+    const user = useContext(UserContext)
 
     const createChat = async (receiverId) => {
-        let chatId = [id, receiverId].sort().join('-')
+        console.log(user.user.id, receiverId)
+        let chatId = [user.user.id, receiverId].sort().join('-')
         try {
             setDoc(doc(getFirestore(), 'chats', chatId), {
-                [id]: receiverId,
-                [receiverId]: id
+                [user.user.id]: receiverId,
+                [receiverId]: user.user.id,
+                participants: [receiverId, user.user.id]
             })
         } catch (error) {
             console.error('Error creating chat', error)
@@ -27,6 +30,7 @@ function ChatsList() {
         const q = query(collection(getFirestore(), 'chats'), where(id, '!=', false))
         const data = await getDocs(q)
         setChats(data.docs)
+        setLoaded(true)
     }
 
     const fetchUsers = async (user) => {
@@ -35,42 +39,45 @@ function ChatsList() {
         setQueried(users.docs)
     }
 
-    const handleChange = (e) =>{
+    const handleChange = (e) => {
         setInput(e.currentTarget.value)
     }
 
     useEffect(() => {
-        if (id) {
-            fetchChats(id)
+        if (user.user) {
+            fetchChats(user.user.id)
         }
-    }, [id])
+    }, [user])
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchUsers(input)
-    },[input])
+    }, [input])
+
+    if(!loaded){
+        return <Loader /> 
+    }
 
 
     return (
         <section className="chats">
-            <input type="text" value={input} onChange={handleChange}/>
+            <input type="text" value={input} onChange={handleChange} />
             <div className="chat-searched">
-                {queried.map(query=>(
-                    <UserPreview 
-                    id={query.data().id}/>
+                {queried.map(query => (
+                    query.data().id !== user.user.id
+                    && <UserPreview
+                        id={query.data().id} className={'tweet'} cb={createChat} key={query.data().id}/>
                 ))}
             </div>
             {chats.map(chat => {
                 return (
-                    <div key={chat.data().id} >
-                        <UserPreview 
-                        path={`/messages/chat/${[id, chat.data().id].sort().join('-')}`} 
-                        key={chat.data().id}
-                        id={chat.data()[id]}
-                        className='tweet'
-                        time={chat.data().updated_at}>
+                    <div key={chat.id} >
+                        <UserPreview
+                            path={`/messages/chat/${chat.id}`}
+                            id={chat.data()[user.user.id]}
+                            className='tweet'
+                            time={chat.data().updated_at}>
 
                         </UserPreview>
-                        <button onClick={() => createChat(chat.data().id)}>Generate Chat</button>
                     </div>
                 )
             })}

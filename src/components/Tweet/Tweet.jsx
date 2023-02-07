@@ -1,12 +1,11 @@
-import { arrayRemove, arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getFirestore, increment, updateDoc } from "firebase/firestore";
 import HTMLReactParser from "html-react-parser";
 import { useContext, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Contexts/UserContext";
 import UserPreview from "../Main/UserPreview";
 
-function Tweet(props) {
+function Tweet({tweetData, index = 0, id, isParent}) {
     const user = useContext(UserContext)
     const [ref, inView] = useInView({ threshold: 1, triggerOnce: true })
     const [viewed, setViewed] = useState(false)
@@ -14,20 +13,21 @@ function Tweet(props) {
     const [likes, setLikes] = useState()
     const [retweets, setRetweets] = useState()
     const [retweeted, setRetweeted] = useState(false)
-    const { tweetData } = props
 
 
     const handleLike = async (e) => {
         e.stopPropagation()
         if (!user.user) return false
         if (liked) {
-            await updateDoc(doc(getFirestore(), 'tweets', props.id), {
-                liked_by: arrayRemove(user.user.tag)
+            await updateDoc(doc(getFirestore(), 'tweets', id), {
+                liked_by: arrayRemove(user.user.tag),
+                likes: increment(-1)
             })
             setLiked(false)
         } else {
-            await updateDoc(doc(getFirestore(), 'tweets', props.id), {
-                liked_by: arrayUnion(user.user.tag)
+            await updateDoc(doc(getFirestore(), 'tweets', id), {
+                liked_by: arrayUnion(user.user.tag),
+                likes: increment(1)
             })
             setLiked(true)
         }
@@ -37,12 +37,12 @@ function Tweet(props) {
         e.stopPropagation()
         if (!user.user) return false
         if (retweeted) {
-            await updateDoc(doc(getFirestore(), 'tweets', props.id), {
+            await updateDoc(doc(getFirestore(), 'tweets', id), {
                 retweeted_by: arrayRemove(user.user.tag)
             })
             setRetweeted(false)
         } else {
-            await updateDoc(doc(getFirestore(), 'tweets', props.id), {
+            await updateDoc(doc(getFirestore(), 'tweets', id), {
                 retweeted_by: arrayUnion(user.user.tag)
             })
             setRetweeted(true)
@@ -55,8 +55,9 @@ function Tweet(props) {
     const handleView = async () => {
         if (inView) {
             try {
-                await updateDoc(doc(getFirestore(), 'tweets', props.id), {
-                    viewers: arrayUnion(user.user.tag)
+                await updateDoc(doc(getFirestore(), 'tweets', id), {
+                    viewers: arrayUnion(user.user.tag),
+                    views: increment(1)
                 })
                 setViewed(true)
             } catch (error) {
@@ -94,11 +95,11 @@ function Tweet(props) {
 
     return (
         <UserPreview
-            className={props.isParent ? "tweet tweet-parent" : 'tweet'}
-            path={`/${tweetData.userId}/status/${props.id}`}
+            className={isParent ? "tweet tweet-parent" : 'tweet'}
+            path={`/${tweetData.userId}/status/${id}`}
             id={tweetData.userId}
             time={tweetData.created_at}>
-            {tweetData.parent_tweet_user && (
+            {(tweetData.parent_tweet_user && (index === 0)) && (
                 <div className="tweet-replied">
                     Replying to <a href="youtube.com">{tweetData.parent_tweet_user}</a>
                 </div>

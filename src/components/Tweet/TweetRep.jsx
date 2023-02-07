@@ -4,15 +4,20 @@ import twemoji from "twemoji"
 import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
 
-function TweetRep({ parentId = null, parentName = null, saveTweetRef }) {
+function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
     const [emojiModal, setEmojiModal] = useState(false)
     const [clicked, setClicked] = useState(false)
     const user = useContext(UserContext)
     const textareaRef = useRef()
+    const savedSelectionRef = useRef(null);
     const [files, setFiles] = useState([])
     const [tweetContent, setTweetContent] = useState('')
     const createTweet = useContext(CreateTweetContext)
 
+    const handleEmojiClick = (e) => {
+        e.stopPropagation()
+        setEmojiModal(true)
+    }
 
     const handleCursor = (event) => {
         if (event.target.tagName === 'IMG') {
@@ -36,13 +41,44 @@ function TweetRep({ parentId = null, parentName = null, saveTweetRef }) {
     }
 
     const handleP = (e) => {
+        console.log(e.nativeEvent)
+        const mentions = e.target.innerHTML.match(/^@\w+/g);
+
+        if (!mentions) {
+            return;
+        }
+
+        mentions.forEach(function (mention) {
+            const link = document.createElement('a');
+            link.href = '/' + mention.slice(1);
+            link.innerHTML = mention;
+            link.contentEditable = true;
+
+            link.addEventListener('input', function () {
+                link.href = '/' + link.innerHTML.slice(1);
+            });
+
+            e.target.innerHTML = e.target.innerHTML.replace(mention, link.outerHTML);
+        });
+
+        const lastMention = mentions[mentions.length - 1];
+        const link = e.target.querySelector('a[href="/' + lastMention.slice(1) + '"]');
+
+        const range = document.createRange();
+        const selection = window.getSelection();
+
+        range.setStart(link.firstChild, 1);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        savedSelectionRef.current = window.getSelection().getRangeAt(0).cloneRange();
         setTweetContent(e.target.innerHTML)
     }
 
-    const handleClick = async() => {
-        if(!tweetContent) return 
-        let ref = await createTweet(tweetContent, files, parentId, parentName)
-        saveTweetRef(ref)
+    const handleClick = async () => {
+        if (!tweetContent) return
+        await createTweet(tweetContent, files, parentId, parentName, ancestorUser)
         textareaRef.current.textContent = ''
         setFiles('')
         setTweetContent('')
@@ -57,18 +93,27 @@ function TweetRep({ parentId = null, parentName = null, saveTweetRef }) {
         }
     }
 
+    console.log(tweetContent)
+
     const handleEmoji = ((emoji) => {
-        let emojiEl = twemoji.parse(emoji.emoji)
-        textareaRef.current.innerHTML += emojiEl
+        const selection = window.getSelection();
+        const range = savedSelectionRef.current.cloneRange();
+
+        const emojiContainer = document.createElement("span");
+        emojiContainer.innerHTML = twemoji.parse(emoji.emoji);
+
+        range.insertNode(emojiContainer);
+        range.setStartAfter(emojiContainer);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
         setTweetContent(textareaRef.current.innerHTML)
     })
 
-    const handleEmojiClick = (e) => {
-        e.stopPropagation()
-        setEmojiModal(true)
-    }
 
-    const handleFocus = () =>{
+
+    const handleFocus = () => {
         setClicked(true)
     }
 
@@ -87,12 +132,12 @@ function TweetRep({ parentId = null, parentName = null, saveTweetRef }) {
                 <div className="tweet-replied" style={{ padding: '12px 0px 0px 72px' }}>
                     Replying to <a href="youtube.com">{parentName}</a>
                 </div>}
-                {user.user && <div className={!parentId ? "tweet home-write" : "tweet reply-write"}>
+            {user.user && <div className={!parentId ? "tweet home-write" : "tweet reply-write"}>
                 <div className="side-tweet">
                     <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
                 </div>
                 <div className="tweet-write">
-                    <p ref={textareaRef} className={!tweetContent ? 'empty-tweet tweet-write-content' : 'tweet-write-content'} onClick={handleCursor} onFocus={handleFocus} contentEditable onBlur={handleP} onInput={handleP}></p>
+                    <p ref={textareaRef} className={!tweetContent ? 'empty-tweet tweet-write-content' : 'tweet-write-content'} onInput={handleP} onClick={handleCursor} onFocus={handleFocus} contentEditable onBlur={handleP} ></p>
                     {files.length > 0 && <div className="tweet-media">
                         {files.map(media => (
                             <div className="tweet-media-wrapper">
@@ -104,7 +149,7 @@ function TweetRep({ parentId = null, parentName = null, saveTweetRef }) {
                         <div className="tweet-write-options">
                             <div className="write-left-options">
                                 <label htmlFor="media-tweet" className='media-tweet'>
-                                    <input type="file" id='media-tweet' style={{ display: 'none' }} multiple onChange={handleFile}/>
+                                    <input type="file" id='media-tweet' style={{ display: 'none' }} multiple onChange={handleFile} />
                                     <svg className='sub-options' viewBox="0 0 24 24" aria-hidden="true" ><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g></svg>
                                 </label>
                                 <label htmlFor="emoji-tweet" className='media-tweet' onClick={handleEmojiClick}>
