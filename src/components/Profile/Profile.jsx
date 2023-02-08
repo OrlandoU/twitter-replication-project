@@ -1,9 +1,10 @@
 import { collection, doc, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import '../../assets/css/Profile.css'
 import Loader from "../Loader"
 
-function Profile(){
+function Profile() {
     const [user, setUser] = useState({})
     const url = useParams()
 
@@ -11,11 +12,11 @@ function Profile(){
         const user = await getDocs(query(collection(getFirestore(), 'users'), where('tag', '==', url.profileTag)))
         setUser(user.docs[0].data())
     }
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         fetchUser()
-    },[])
-    if(!user.name){
+    }, [])
+    if (!user.name) {
         return (
             <main><Loader /></main>
         )
@@ -26,9 +27,11 @@ function Profile(){
         <main>
             <div className="banner"></div>
             <div className="profile">
-                <div className="profile-pic">
-                    <img src={user.profile_pic} alt="" />
-                    <button className="edit-profile"></button>
+                <div className="profile-opt">
+                    <div className="profile-pic-container">
+                        <img src={user.profile_pic} alt="" className='profile-pic'/>
+                    </div>
+                    <button className="edit-profile">Edit Profile</button>
                 </div>
                 <div className="profile-ids">
                     <div className="profile-name">{user.name}</div>

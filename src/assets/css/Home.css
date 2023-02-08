@@ -57,8 +57,12 @@
 .tweet-username {
     font-weight: 600;
     font-size: 1.05rem;
+    color: var(--font-color);
+    text-decoration: none;
 }
-
+.tweet-username:hover{
+    text-decoration: underline;
+}
 .tweet-usertag {
     color: rgb(83, 100, 113);
     font-size: 1.05rem;
@@ -98,6 +102,10 @@
 
 .tweet-write-content__highlighter {
     border: 2px solid transparent !important;
+}
+
+.tweet-write-content__highlighter .tag {
+    color: #00B2FF;
 }
 
 .tweet-content {

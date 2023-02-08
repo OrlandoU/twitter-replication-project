@@ -37,6 +37,11 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
         navigate(path)
     }
 
+    const handleProfile = (e) => {
+        e.stopPropagation()
+        navigate('/'+user.tag)
+    }
+
     useEffect(() => {
         if (data) {
             console.log(data)
@@ -57,7 +62,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                         </div>
                         <div className="main-tweet-content">
                             <div className={"tweet-header"}>
-                                <div className="tweet-username">{user.name}</div>
+                                <div className="tweet-username" onClick={handleProfile}>{user.name}</div>
                                 <div className="tweet-usertag">@{user.tag}</div>
                                 {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
                             </div>
@@ -67,7 +72,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                         <div className="main-tweet-header">
                             <img src={user.profile_pic} alt="User Profile" className="tweet-profile-pic" />
                             <div className="main-tweet-names">
-                                <div className="main-tweet-name tweet-username">{user.name}</div>
+                                <div className="main-tweet-name tweet-username" onClick={handleProfile}>{user.name}</div>
                                 <div className="main-tweet-tag tweet-usertag">@{user.tag}</div>
                             </div>
                             <div className="options"></div>

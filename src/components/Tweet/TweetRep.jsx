@@ -8,6 +8,7 @@ import UserPreview from "../Main/UserPreview"
 
 function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
     const [emojiModal, setEmojiModal] = useState(false)
+    const [clicked, setClicked] = useState(false)
     const user = useContext(UserContext)
     const textareaRef = useRef()
     const savedSelectionRef = useRef(null);
@@ -105,7 +106,8 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                         className='tweet-write-content'
                         placeholder="Write a message"
                         onBlur={savePosition}
-                        autoFocus>
+                        autoFocus
+                        onClick={()=>setClicked(true)}>
                         <Mention
                             trigger="@"
                             data={fetchUser}
@@ -122,7 +124,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                             </div>
                         ))}
                     </div>}
-                    {(!parentId) &&
+                    {(!parentId || clicked) &&
                         <div className="tweet-write-options">
                             <div className="write-left-options">
                                 <label htmlFor="media-tweet" className='media-tweet'>
