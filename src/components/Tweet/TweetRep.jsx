@@ -93,7 +93,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                 <div className="tweet-replied" style={{ padding: '12px 0px 0px 72px' }}>
                     Replying to <a href={`#/${parentName}`} className="tag">@{parentName}</a>
                 </div>}
-            {user.user && <div className={!parentId ? "tweet home-write" : "tweet reply-write"}>
+            {user.user && <div className={!parentId ? "tweet tweet-wrapper home-write" : "tweet tweet-wrapper reply-write"}>
                 <div className="side-tweet">
                     <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
                 </div>
@@ -106,7 +106,6 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                         className='tweet-write-content'
                         placeholder="Write a message"
                         onBlur={savePosition}
-                        autoFocus
                         onClick={()=>setClicked(true)}>
                         <Mention
                             trigger="@"

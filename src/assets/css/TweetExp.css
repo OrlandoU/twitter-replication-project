@@ -104,6 +104,7 @@
 .return-tweet-exp{
     display: flex;
     align-items: center;
+    padding: 12px !important;
     gap: 20px;
     backdrop-filter: blur(8px);
     background-color: rgba(255, 255, 255, 0.795);

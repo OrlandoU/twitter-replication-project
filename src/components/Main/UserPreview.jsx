@@ -1,8 +1,10 @@
 import { doc, getDoc, getFirestore } from "firebase/firestore"
-import { forwardRef, useEffect, useState } from "react"
+import { forwardRef, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { UserContext } from "../../Contexts/UserContext"
 
-const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data }, ref) => {
+const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by }, ref) => {
+    const mainUser = useContext(UserContext)
     const [user, setUser] = useState({})
     const navigate = useNavigate()
 
@@ -39,7 +41,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
 
     const handleProfile = (e) => {
         e.stopPropagation()
-        navigate('/'+user.tag)
+        navigate('/' + user.tag)
     }
 
     useEffect(() => {
@@ -57,16 +59,27 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
             {
                 !main ?
                     <div className={className} onClick={handleClick}>
-                        <div className="side-tweet">
-                            <img className="tweet-profile-pic" src={user.profile_pic} alt="" />
+                        {retweeted_by && 
+                        <div className="retweeted-header">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" className="retweeted-svg"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>
+                                <div className="tweet-username" onClick={(e)=>{
+                                    e.stopPropagation()
+                                    navigate('/' + retweeted_by.tag)
+                                }}>{retweeted_by.tag === mainUser.user.tag ? 'You' : retweeted_by.name} Retweeted</div>
                         </div>
-                        <div className="main-tweet-content">
-                            <div className={"tweet-header"}>
-                                <div className="tweet-username" onClick={handleProfile}>{user.name}</div>
-                                <div className="tweet-usertag">@{user.tag}</div>
-                                {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
+                        }
+                        <div className="tweet-wrapper">
+                            <div className="side-tweet">
+                                <img className="tweet-profile-pic" src={user.profile_pic} alt="" />
                             </div>
-                            {children}
+                            <div className="main-tweet-content">
+                                <div className={"tweet-header"}>
+                                    <div className="tweet-username" onClick={handleProfile}>{user.name}</div>
+                                    <div className="tweet-usertag">@{user.tag}</div>
+                                    {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
+                                </div>
+                                {children}
+                            </div>
                         </div>
                     </div> : <div className="main-tweet" ref={ref}>
                         <div className="main-tweet-header">

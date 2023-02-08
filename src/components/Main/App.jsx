@@ -44,6 +44,9 @@ function App() {
         created_at: new Date().getTime(),
         keywords_arr: keywords
       })
+      await updateDoc(doc(getFirestore(), 'users', user.id), {
+        tweets_count : increment(1)
+      })
 
       for(let file of files){
         let filePath = `tweet-media/${tweet.id}/${file.name}`;
@@ -138,7 +141,7 @@ function App() {
             <Route path='/notifications' element={<Notifications />} />
             <Route path='/messages/:type?/:chatId?' element={<Messages />} />
             <Route path='/bookmarks' element={<Bookmarks />} />
-            <Route path='/:profileTag' element={<Profile key={location.pathname} />} />
+            <Route path='/:profileTag/*' element={<Profile />} />
             <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
           </Routes>
           

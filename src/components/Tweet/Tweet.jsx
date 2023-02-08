@@ -1,11 +1,12 @@
-import { arrayRemove, arrayUnion, doc, getFirestore, increment, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, deleteDoc, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from "firebase/firestore";
 import HTMLReactParser from "html-react-parser";
 import { useContext, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { UserContext } from "../../Contexts/UserContext";
 import UserPreview from "../Main/UserPreview";
 
-function Tweet({tweetData, index = 0, id, isParent}) {
+function Tweet({ tweetData, index = 0, id, isParent}) {
+    const [tweet, setTweet] = useState({})
     const user = useContext(UserContext)
     const [ref, inView] = useInView({ threshold: 1, triggerOnce: true })
     const [viewed, setViewed] = useState(false)
@@ -37,15 +38,28 @@ function Tweet({tweetData, index = 0, id, isParent}) {
         e.stopPropagation()
         if (!user.user) return false
         if (retweeted) {
+            setRetweeted(false)
             await updateDoc(doc(getFirestore(), 'tweets', id), {
                 retweeted_by: arrayRemove(user.user.tag)
             })
-            setRetweeted(false)
+            await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(-1) })
+            await deleteDoc(doc(getFirestore(), 'tweets', id + user.user.id))
+            
         } else {
+            setRetweeted(true)
             await updateDoc(doc(getFirestore(), 'tweets', id), {
                 retweeted_by: arrayUnion(user.user.tag)
             })
-            setRetweeted(true)
+            await updateDoc(doc(getFirestore(), 'users', user.user.id), {tweets_count: increment(1)})
+            await setDoc(doc(getFirestore(), 'tweets', id + user.user.id), {
+                userId: user.user.id,
+                userTag: user.user.tag,
+                userName: user.user.name,
+                created_at : new Date().getTime(),
+                retweeted_tweet: id,
+                parent_tweet: null
+            })
+            
         }
     }
     const handleReply = (e) => {
@@ -67,6 +81,12 @@ function Tweet({tweetData, index = 0, id, isParent}) {
         }
     }
 
+    const fetchTweetData = async () => {
+        const data = await getDoc(doc(getFirestore(), 'tweets', tweetData.retweeted_tweet))
+        console.log(data.data())
+        setTweet(data.data())
+    }
+
     useEffect(() => {
         if (user.user && !viewed) {
             handleView()
@@ -75,38 +95,52 @@ function Tweet({tweetData, index = 0, id, isParent}) {
     }, [inView])
 
     useEffect(() => {
-        if (user.user) {
-            if (tweetData.liked_by.includes(user.user.tag)) {
-                setLikes(tweetData.liked_by.length - 1)
+        if (user.user && tweet.userId) {
+            if (tweet.liked_by.includes(user.user.tag)) {
+                setLikes(tweet.liked_by.length - 1)
             } else {
-                setLikes(tweetData.liked_by.length)
+                setLikes(tweet.liked_by.length)
             }
 
-            if (tweetData.retweeted_by.includes(user.user.tag)) {
-                setRetweets(tweetData.retweeted_by.length - 1)
+            if (tweet.retweeted_by.includes(user.user.tag)) {
+                setRetweets(tweet.retweeted_by.length - 1)
             } else {
-                setRetweets(tweetData.retweeted_by.length)
+                setRetweets(tweet.retweeted_by.length)
             }
-            setLiked(tweetData.liked_by.includes(user.user.tag))
-            setRetweeted(tweetData.retweeted_by.includes(user.user.tag))
+            setLiked(tweet.liked_by.includes(user.user.tag))
+            setRetweeted(tweet.retweeted_by.includes(user.user.tag))
         }
+
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.user])
+    }, [user.user, tweet])
+
+    useEffect(() => {
+        if (tweetData.retweeted_tweet) {
+            fetchTweetData()
+        }else{
+            setTweet(tweetData)
+        }
+    }, [])
+
+    if (!tweet.userId) return
+
 
     return (
         <UserPreview
             className={isParent ? "tweet tweet-parent" : 'tweet'}
-            path={`/${tweetData.userTag}/status/${id}`}
-            id={tweetData.userId}
-            time={tweetData.created_at}>
-            {(tweetData.parent_tweet_user && (index === 0)) && (
+            path={`/${tweet.userTag}/status/${id}`}
+            id={tweet.userId}
+            time={tweet.created_at}
+            retweeted_by={tweetData.retweeted_tweet ? {tag: tweetData.userTag, name: tweetData.userName}: null}>
+            {(tweet.parent_tweet_user && (index === 0)) && (
                 <div className="tweet-replied">
-                    Replying to <a href={`#/${tweetData.parent_tweet_user}`} className="tag">@{tweetData.parent_tweet_user}</a>
+                    Replying to <a href={`#/${tweet.parent_tweet_user}`} className="tag">@{tweet.parent_tweet_user}</a>
                 </div>
             )}
-            <div className="tweet-content" ref={ref}>{HTMLReactParser(tweetData.content)}</div>
-            {tweetData.media_url && tweetData.media_url.length > 0 && <div className="tweet-media">
-                {tweetData.media_url.map(media => (
+            <div className="tweet-content" ref={ref}>{HTMLReactParser(tweet.content)}</div>
+            {tweet.media_url && tweet.media_url.length > 0 && <div className="tweet-media">
+                {tweet.media_url.map(media => (
                     <div className="tweet-media-wrapper">
                         <img src={media} alt="Tweet media" key={media} />
                     </div>
@@ -115,7 +149,7 @@ function Tweet({tweetData, index = 0, id, isParent}) {
             <div className="tweet-interact">
                 <div className="comment" onClick={handleReply}>
                     <svg viewBox="0 0 24 24" aria-hidden="true" ><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>
-                    {tweetData.replies_count || ''}
+                    {tweet.replies_count || ''}
                 </div>
                 <div onClick={handleRetweet} class={retweeted ? "retweeted retweet" : "retweet"}>
                     <svg viewBox="0 0 24 24" aria-hidden="true" ><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>

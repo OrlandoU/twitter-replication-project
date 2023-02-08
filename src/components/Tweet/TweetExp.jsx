@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, limit, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import '../../assets/css/TweetExp.css'
@@ -112,9 +112,22 @@ function TweetExp() {
             await updateDoc(doc(getFirestore(), 'tweets', tweetId), {
                 retweeted_by: arrayRemove(user.user.tag)
             })
+            await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(-1) })
+
+            await deleteDoc(doc(getFirestore(), 'tweets', tweetId + user.user.id))
         } else {
             await updateDoc(doc(getFirestore(), 'tweets', tweetId), {
                 retweeted_by: arrayUnion(user.user.tag)
+            })
+            await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(1) })
+
+            await setDoc(doc(getFirestore(), 'tweets', tweetId + user.user.id), {
+                userId: user.user.id,
+                userTag: user.user.tag,
+                userName: user.user.name,
+                created_at: new Date().getTime(),
+                retweeted_tweet: tweetId,
+                parent_tweet: null
             })
         }
     }

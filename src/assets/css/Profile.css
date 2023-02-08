@@ -2,17 +2,35 @@
     height: 200px;
     background-color: orangered;
 }
+.calendar-svg{
+    width: 18.75px;
+    fill: rgb(83, 100, 113);
+    height: 18.75px;
+    margin-right: 4px;
+}
+.profile-header{
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -.5px;
+    align-items: flex-start;
+}
+.profile-tweets-count{
+    font-size: .95rem;
+    color: rgb(83, 100, 113);
+    font-weight: 400;
+}
 
 .profile-opt{
     display: flex;
     height: 68px;
     position: relative;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 .profile-pic-container{
-    position: relative;
-    margin-top: -15%;
+    bottom: 0px;
+    left: 0px;
+    position: absolute;
     margin-bottom: 12px;
     object-fit: cover;
     height: 142px;
@@ -26,15 +44,31 @@
     height: 100%;
     border-radius: 50%;
 }
-
+.edit-profile{
+    padding: .45rem .95rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 1px solid rgb(212, 212, 212);
+    background-color: transparent;
+    transition: 300ms;
+}
+.edit-profile:hover{
+    background-color: rgba(220, 220, 220, 0.63);
+}
 .profile{
     padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .profile-ids{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    letter-spacing: -.5px;
 }
 .profile-name{
     font-size: 1.4rem;
@@ -43,4 +77,58 @@
 .profile-tag{
     font-size: 1.1rem;
     color: rgb(83, 100, 113);
+}
+.profile-creation-date{
+    display: flex;
+    color: rgb(83, 100, 113);
+    align-items: center;
+}
+.profile-track{
+    color: rgb(83, 100, 113);
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+}
+.profile-track .count{
+    font-weight: 600;
+    color: var(--font-color);
+}
+.profile-navbar{
+    display: flex;
+    border-bottom: 1px solid rgb(239, 243, 244);
+}
+
+.profile-link{
+    padding: 0px 16px;
+    white-space: nowrap;
+    flex: 1;
+    font-size: 1.05rem;
+    color: rgb(83, 100, 113);
+    text-decoration: none;
+}
+
+.profile-link.active{
+    color: var(--font-color);
+    font-weight: 900;
+}   
+.link-wrapper{
+    position: relative;
+    padding: 16px 0px;
+    display: block;
+    width: fit-content;
+    margin: auto;
+}
+.active .link-wrapper::after{
+    content: '';
+    position: absolute;
+    height: 4px;
+    border-radius: 15px;
+    width: 100%;
+    bottom: 0px;
+    background-color: rgb(0, 162, 255);
+    left: 0px;
+}
+
+.heightened{
+    min-height: 120vh;
 }

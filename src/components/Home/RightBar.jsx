@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Signin from "../Main/Signin"
@@ -24,12 +24,18 @@ function RightBar() {
                     followers: arrayUnion(userP.user.tag),
                     followers_count: increment(1)
                 })
+                await updateDoc(getDoc(getFirestore(), 'users', userP.user.id), 
+                    {following_count: increment(1)}
+                )
             }
             else {
                 await updateDoc(userRef.ref, {
                     followers: arrayRemove(userP.user.tag),
                     followers_count: increment(-1)
                 })
+                await updateDoc(getDoc(getFirestore(), 'users', userP.user.id),
+                    {following_count: increment(-1)}
+                )
             }
         } catch (error) {
             console.error('Error handling follow request', error)

@@ -19,12 +19,13 @@
     flex-direction: column;
     gap: 2px;
 }
-
-.tweet {
-    padding: 12px 12px 5px 12px;
+.tweet{
+    padding: 16px 16px 5px 16px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+}
+.tweet-wrapper {
     display: flex;
     gap: 12px;
-    border-bottom: 1px solid rgb(239, 243, 244);
     transition: 200ms;
 }
 
@@ -43,7 +44,10 @@
     border: 1px solid #888;
     z-index: 2;
 }
-
+.retweeted-svg{
+    fill: rgb(83, 100, 113);
+    height: 14px;
+}
 
 .tweet-profile-pic {
     height: 48px;
@@ -84,6 +88,17 @@
 
 .tweet-replied a {}
 
+
+.retweeted-header{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding-left: 33px;
+}
+.retweeted-header .tweet-username{
+    font-size: .9rem;
+    color: rgb(83, 100, 113) !important;
+}
 
 
 .tag {

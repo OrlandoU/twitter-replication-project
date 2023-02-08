@@ -45,7 +45,7 @@ function Home() {
                         <h1>Home</h1>
                         <TweetRep saveTweetRef={addNewReply} />
                         {tweets.map(tweet => (
-                            <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
+                            <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.data().retweeted_tweet || tweet.id} />
                         ))}
                     </>}
 
