@@ -50,6 +50,7 @@
 }
 
 .tweet-profile-pic {
+
     height: 48px;
     width: 48px;
     object-fit: cover;
@@ -86,7 +87,6 @@
     text-align: start;
 }
 
-.tweet-replied a {}
 
 
 .retweeted-header{
@@ -220,7 +220,7 @@
     fill: rgb(34, 151, 120);
 }
 
-.tweet:not(.return-tweet-exp):not(.home-write):not(.reply-write):hover {
+main:not(.modal) > .tweet:not(.return-tweet-exp):not(.home-write):not(.reply-write):hover {
     background-color: rgb(248, 244, 244);
     cursor: pointer;
 }

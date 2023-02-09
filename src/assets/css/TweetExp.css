@@ -86,11 +86,11 @@
 .tweet-parent .side-tweet {
     position: relative;
 }
-.tweet-parent .tweet-profile-pic , .main-tweet .tweet-profile-pic{
+.tweet-profile-pic{
     box-shadow: 0px 0px 0px 5px white;
 }
 
-.tweet:not(.home-write):hover .tweet-profile-pic{
+main:not(.modal) .tweet:not(.home-write):hover .tweet-profile-pic{
     box-shadow: 0px 0px 0px 5px rgb(248, 244, 244);
 }
 .tweet-parent .side-tweet::after {
@@ -99,7 +99,7 @@
     height: 100%;
     width: 2px;
     background-color: gainsboro;
-    top: 20px;
+    top: 100%;
     left: 50%;
     right: 50%;
     transform: translate(-50%, 0);

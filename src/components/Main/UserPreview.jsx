@@ -3,7 +3,7 @@ import { forwardRef, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
 
-const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by }, ref) => {
+const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by, isModal }, ref) => {
     const mainUser = useContext(UserContext)
     const [user, setUser] = useState({})
     const navigate = useNavigate()
@@ -36,7 +36,10 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
         if (!path) {
             if (cb) cb(id)
         }
-        navigate(path)
+        if(!isModal){
+
+            navigate(path)
+        }
     }
 
     const handleProfile = (e) => {
@@ -46,7 +49,6 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
 
     useEffect(() => {
         if (data) {
-            console.log(data)
             setUser(data)
         } else {
             fetchUser(id)
