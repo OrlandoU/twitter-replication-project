@@ -6,7 +6,7 @@ import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
 import UserPreview from "../Main/UserPreview"
 
-function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
+function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef }) {
     const [emojiModal, setEmojiModal] = useState(false)
     const [clicked, setClicked] = useState(false)
     const user = useContext(UserContext)
@@ -43,6 +43,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
         if (!tweetContent) return
         await createTweet(tweetContent, files, parentId, parentName, ancestorUser)
         textareaRef.current.textContent = ''
+        closeRef.current.click()
         setFiles('')
         setTweetContent('')
     }

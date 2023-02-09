@@ -25,7 +25,7 @@ function SideBar() {
 
     return (
         <>
-            <Modal refToObject={triggerRef}>
+            <Modal refToObject={triggerRef} className={'home-modal'}>
                 <TweetRep />
             </Modal>
             <nav>
