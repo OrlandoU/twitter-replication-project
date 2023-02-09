@@ -275,3 +275,41 @@ li:nth-child(2) .active svg {
 .emoji{
   padding: 0px 1px;
 }
+.modal-container{
+  left: 0;
+  position: fixed;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
+  background-color: rgba(63, 63, 63, 0.322);
+  z-index: 100;
+}
+
+.modal{
+  padding: 16px;
+  margin-top: 50px;
+  background-color: white;
+  border-radius: 16px;
+}
+
+.close-modal-svg{
+  height: 36px;
+  padding: 8px;
+  border-radius: 50%;
+}
+.close-modal{
+  width: fit-content;
+}
+.close-modal-svg:hover{
+  background-color: rgba(220, 220, 220, 0.438);
+}
+
+.modal .tweet{
+  border: 0px;
+}
+.modal .tweet-write-content__control{
+  min-height: 100px;
+  border-bottom: 1px solid rgb(239, 243, 244);
+}

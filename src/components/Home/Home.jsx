@@ -12,6 +12,8 @@ import TweetRep from '../Tweet/TweetRep';
 import { useEffect, useState } from 'react';
 import Loader from '../Loader';
 import RightBar from './RightBar';
+import Thread from '../Tweet/Thread';
+import { Modal } from 'react-native-web';
 
 function Home() {
     const [tweets, setTweets] = useState([])
@@ -28,13 +30,6 @@ function Home() {
         fetchTweets()
     }, [])
 
-    const addNewReply = async (ref) => {
-        let doc = await getDoc(ref)
-        setTweets(prevState => [
-            doc,
-            ...prevState
-        ])
-    }
 
     return (
         <>
@@ -43,9 +38,9 @@ function Home() {
                     <Loader /> :
                     <>
                         <h1>Home</h1>
-                        <TweetRep saveTweetRef={addNewReply} />
+                        <TweetRep />
                         {tweets.map(tweet => (
-                            <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.data().retweeted_tweet || tweet.id} />
+                            tweet.data().thread_size < 3 ? <Thread thread={tweet.id} /> : <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
                         ))}
                     </>}
 

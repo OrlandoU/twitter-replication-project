@@ -104,7 +104,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null }) {
                         customSuggestionsContainer={handleContainer}
                         inputRef={textareaRef}
                         className='tweet-write-content'
-                        placeholder="Write a message"
+                        placeholder={parentId ? "Write a message": "What's Happening?"}
                         onBlur={savePosition}
                         onClick={()=>setClicked(true)}>
                         <Mention
