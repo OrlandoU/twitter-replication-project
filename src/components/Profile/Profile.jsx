@@ -1,4 +1,4 @@
-import { arrayUnion, collection, doc, getDocs, getFirestore, query, updateDoc, where } from "firebase/firestore"
+import { collection, doc, getDocs, getFirestore, query, updateDoc, where } from "firebase/firestore"
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"
 import { useContext, useEffect, useRef, useState } from "react"
 import { NavLink, Route, Routes, useNavigate, useParams } from "react-router-dom"
@@ -98,6 +98,7 @@ function Profile() {
 
     useEffect(() => {
         fetchUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(()=>{
@@ -117,7 +118,7 @@ function Profile() {
 
     return (
         <main className="heightened">
-            <Modal refToObject={editRef} isEdit cb={updateUser}>
+            {(thisUser.user && thisUser.user.id === user.id)&& <Modal refToObject={editRef} isEdit cb={updateUser} className='profile-modal'>
                 <div className="banner">
                     <label htmlFor="profile-banner-modal" className="centered">
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="svg-modal"><g><path d="M9.697 3H11v2h-.697l-3 2H5c-.276 0-.5.224-.5.5v11c0 .276.224.5.5.5h14c.276 0 .5-.224.5-.5V10h2v8.5c0 1.381-1.119 2.5-2.5 2.5H5c-1.381 0-2.5-1.119-2.5-2.5v-11C2.5 6.119 3.619 5 5 5h1.697l3-2zM12 10.5c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2zm-4 2c0-2.209 1.791-4 4-4s4 1.791 4 4-1.791 4-4 4-4-1.791-4-4zM17 2c0 1.657-1.343 3-3 3v1c1.657 0 3 1.343 3 3h1c0-1.657 1.343-3 3-3V5c-1.657 0-3-1.343-3-3h-1z"></path></g></svg>
@@ -138,24 +139,24 @@ function Profile() {
                     </div>
                 </div>
                 <div className="profile-info-modal">
-                    <label htmlFor="profile-name-modal">
+                    <label htmlFor="profile-name-modal" className="input-label">
                         <input type="text" id="profile-name" className="inputs" value={profileName} onChange={handleName}/>
                         <div className={profileName.length ? "label-text" : "label-text expanded"}>Name</div>
                         <div className="letter-count">{profileName.length} / 50</div>
                     </label>
-                    <label htmlFor="profile-bio-modal">
+                    <label htmlFor="profile-bio-modal" className="input-label">
                         <textarea className="inputs profile-bio" type="text" id="profile-bio-modal" value={profileBio} onChange={handleBio}/>
                         <div className={profileBio.length ? "label-text" : "label-text expanded"}>Bio</div>
                         <div className="letter-count">{profileBio.length} / 160</div>
                     </label>
-                    <label htmlFor="profile-location-modal">
+                    <label htmlFor="profile-location-modal" className="input-label">
                         <input className="inputs" type="text" id="profile-location-modal" value={profileLocation} onChange={handleLocation} />
                         <div className={profileLocation.length ? "label-text" : "label-text expanded"}>Location</div>
                         <div className="letter-count">{profileLocation.length} / 30</div>
                     </label>
                 </div>
             </Modal>
-            <div className="return-tweet-exp tweet" onClick={() => navigate(-1)}>
+            }<div className="return-tweet-exp tweet" onClick={() => navigate(-1)}>
                 <div className="wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>arrow-left</title><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
                 </div>

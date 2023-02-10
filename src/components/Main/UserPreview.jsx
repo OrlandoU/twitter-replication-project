@@ -67,7 +67,7 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                                 <div className="tweet-username" onClick={(e)=>{
                                     e.stopPropagation()
                                     navigate('/' + retweeted_by.tag)
-                                }}>{retweeted_by.tag === mainUser.user.tag ? 'You' : retweeted_by.name} Retweeted</div>
+                                }}>{mainUser.user && retweeted_by.tag === mainUser.user.tag ? 'You' : retweeted_by.name} Retweeted</div>
                         </div>
                         }
                         <div className="tweet-wrapper">

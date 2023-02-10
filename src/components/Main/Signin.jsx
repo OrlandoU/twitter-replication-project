@@ -3,7 +3,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext";
 
-function Signin() {
+function Signin({registerRef}) {
     const user = useContext(UserContext)
     const [isLogin, setIsLogin] = useState(false)
     const [name, setName] = useState('')
@@ -75,33 +75,38 @@ function Signin() {
         user.setUser(getAuth().currentUser)
     }
 
-    if (user.user) {
+    // if (user.user) {
 
-        return <button type="button" onClick={handleLogout}>Logout</button>
-    }
+    //     return <button type="button" onClick={handleLogout}>Logout</button>
+    // }
 
     return (
         <>
             {!isLogin ? (
                 <form onSubmit={handleForm}>
-                    <label htmlFor="">
-                        usertag
-                        <input onChange={handleTagChange} type="text" value={tag} required pattern="^[a-zA-Z0-9_]*$" title="Match the pattern"/>
-                    </label>
+                    <div className="profile-info-modal">
+                        <label htmlFor="profile-name-modal" className="input-label">
+                            <input type="text" id="profile-name" className="inputs" value={name} onChange={handleNameChange} />
+                            <div className={name.length ? "label-text" : "label-text expanded"}>Name</div>
+                            <div className="letter-count">{name.length} / 50</div>
+                        </label>
+                        <label htmlFor="profile-tag-modal" className="input-label">
+                            <input type="text" id="profile-name" className="inputs" pattern="^[a-zA-Z0-9_]*$" value={tag} onChange={handleTagChange} />
+                            <div className={tag.length ? "label-text" : "label-text expanded"}>Tag</div>
+                            <div className="letter-count">{tag.length} / 50</div>
+                        </label>
+                        <label htmlFor="profile-mail-modal" className="input-label">
+                            <textarea className="inputs profile-mail" type="text" id="profile-bio-modal" value={email} onChange={handleEmailChange} />
+                            <div className={email.length ? "label-text" : "label-text expanded"}>Email</div>
+                            <div className="letter-count">{email.length} / 160</div>
+                        </label>
+                        <label htmlFor="profile-location-modal" className="input-label">
+                            <input className="inputs" type="text" id="profile-location-modal" value={password} onChange={handlePassChange} />
+                            <div className={password.length ? "label-text" : "label-text expanded"}>Location</div>
+                            <div className="letter-count">{password.length} / 30</div>
+                        </label>
+                    </div>
 
-                    <label htmlFor="">
-                        username
-                        <input onChange={handleNameChange} type="text" value={name} required />
-                    </label>
-
-                    <label htmlFor="">
-                        email
-                        <input onChange={handleEmailChange} type="email" value={email} required />
-                    </label>
-                    <label htmlFor="">
-                        password
-                        <input onChange={handlePassChange} type="password" value={password} required />
-                    </label>
                     <button>Submit</button>
                     <button type="button" onClick={() => setIsLogin(true)}>Login</button>
                 </form>

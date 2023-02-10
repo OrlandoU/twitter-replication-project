@@ -187,6 +187,12 @@
     padding: 10px;
     margin-bottom: 40px;
 }
+.profile-modal.modal-container{
+    align-items: center;
+}
+.profile-modal.modal{
+    margin: 0px;
+}
 
 .profile-info-modal label {
     position: relative;
@@ -217,10 +223,10 @@
     display: none;
 }
 
-.profile-info-modal .inputs:focus {
+ .inputs:focus {
     outline: 2px solid rgb(0, 162, 255);
 }
-.profile-info-modal .inputs:focus ~ .letter-count {
+ .inputs:focus ~ .letter-count {
     display: block;
 }
 .profile-info-modal .inputs:focus + .label-text {
