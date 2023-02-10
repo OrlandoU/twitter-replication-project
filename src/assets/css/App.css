@@ -327,7 +327,7 @@ li:nth-child(2) .active svg {
   display: flex;
   gap: 15px;
   align-items: center;
-  padding: 12px 0px;
+  padding: 12px;
   position: sticky;
   top: 0px;
   background-color: rgba(255, 255, 255, 0.918);
@@ -365,3 +365,8 @@ li:nth-child(2) .active svg {
   transform: translate(-50%, -50%);
 }
 /* 720px */
+
+nav .tweet-header{
+  flex-direction: column;
+  gap: 0px;
+}

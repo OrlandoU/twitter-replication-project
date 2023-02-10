@@ -1,4 +1,4 @@
-.right-bar{
+.right-bar {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -10,4 +10,198 @@
     .right-bar {
         display: none;
     }
+}
+
+.right-bar-box {
+    background-color: rgb(247, 249, 249);
+    ;
+    padding: 0px 16px 16px 16px;
+    border-radius: 15px;
+}
+
+.right-bar-box .title {
+    text-align: left;
+}
+
+.right-bar-box .tweet-profile-pic {
+    box-shadow: none;
+}
+
+.follow-button {
+    font-family: inherit;
+    color: white;
+    border: 0px;
+    font-size: 1rem;
+    padding: .36rem .90rem;
+    font-weight: 600;
+    border-radius: 25px;
+    background-color: var(--font-color);
+    transition: 300ms;
+}
+
+.follow-button:hover {
+    background-color: rgba(0, 0, 0, 0.747);
+}
+
+.right-bar-box .tweet-header {
+    flex-direction: column;
+    gap: 0px;
+    text-align: left;
+}
+
+.right-bar-box .main-tweet-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.register-button {
+    background-color: white;
+    border: 0px;
+    width: 100%;
+    padding: .65rem;
+    margin-bottom: 12px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid rgb(225, 229, 230);
+}
+
+.register-container {
+    border-radius: 15px;
+    border: 1px solid rgb(225, 229, 230);
+    padding: 0px 16px 16px 16px;
+}
+
+.register-container .title {
+    margin-top: 5px;
+}
+
+.sign-form {
+    width: 450px;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 16px;
+}
+
+.login-form {
+    width: 350px;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 16px;
+    gap: 4px;
+}
+.register-or{
+    position: relative;
+}
+.register-or::after{
+    content: '';
+    position: absolute;
+    height: 1px;
+    background-color: rgb(122, 125, 128);
+    width: 100%;
+    top: 50%;
+    left: 0;
+    z-index: 1;
+}
+.register-or span{
+    background-color: white;
+    position: relative;
+    padding: 8px;
+    z-index: 2;
+}
+
+.sign-form .title {
+    text-align: left;
+}
+
+.sign-form .profile-info-modal {
+    padding: 0px;
+    flex: 1;
+}
+
+.signin.modal-container {
+    align-items: center;
+}
+
+.signin.modal {
+    margin: 0px;
+    height: 650px;
+    position: relative;
+}
+
+.signin-button-next {
+    width: 100%;
+    padding: .85rem;
+    border: none;
+    background-color: var(--font-color);
+    color: white;
+    border-radius: 150px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.error-email {
+    position: absolute;
+    color: red;
+}
+
+.error {
+    outline: 2px solid red;
+    margin-bottom: 12px;
+}
+
+.date-containers {
+    display: flex;
+    gap: 4px;
+}
+
+.birthday {
+    margin: 0px;
+}
+
+.birthday-header p {
+    margin: 0px;
+    text-align: left;
+    color: rgb(83, 100, 113);
+}
+
+.date-containers>label {
+    flex: 1;
+}
+
+.date-containers>label:first-child {
+    flex: 2;
+}
+
+.password-title {
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.password-title+p {
+    margin: 0;
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.sign-form .profile-pic-container {
+    position: static;
+    justify-content: center;
+}
+
+.sign-form .profile-opt {
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+}
+
+.who-to-follow {
+    margin-bottom: 16px;
 }
