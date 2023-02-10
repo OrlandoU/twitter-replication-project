@@ -347,3 +347,39 @@ main:not(.modal) > .tweet:not(.return-tweet-exp):not(.home-write):not(.reply-wri
 .reply-write .empty-tweet::after {
     content: 'Tweet your reply';
 }
+
+.who-to-follow{
+    background-color: rgb(247, 249, 249);;
+    padding: 0px 16px 16px 16px;
+    border-radius: 15px;
+}
+.who-to-follow .title{
+    text-align: left;
+}
+.who-to-follow .tweet-profile-pic{
+    box-shadow: none;
+}
+.follow-button{
+    font-family: inherit;
+    color: white;
+    border: 0px;
+    font-size: 1rem;
+    padding: .36rem .90rem;
+    font-weight: 600;
+    border-radius: 25px;
+    background-color: var(--font-color);
+    transition: 300ms;
+}
+.follow-button:hover{
+    background-color: rgba(0, 0, 0, 0.747);
+}
+.who-to-follow .tweet-header{
+    flex-direction: column;
+    gap: 0px;
+    text-align: left;
+}
+.who-to-follow .main-tweet-content{
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

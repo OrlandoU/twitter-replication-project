@@ -43,7 +43,9 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
         if (!tweetContent) return
         await createTweet(tweetContent, files, parentId, parentName, ancestorUser)
         textareaRef.current.textContent = ''
-        closeRef.current.click()
+        if(closeRef){
+            closeRef.current.click()
+        }
         setFiles('')
         setTweetContent('')
     }

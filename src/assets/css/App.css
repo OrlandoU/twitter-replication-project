@@ -6,6 +6,7 @@ textarea{
   border: none;
 }
 .App {
+  justify-content: center;
   text-align: center;
   display: flex;
   width: clamp(0px, 100%, 1320px);
@@ -271,6 +272,9 @@ li:nth-child(2) .active svg {
     transform: rotate(1080deg);
   }
 }
+.heightened .banner{
+  position: relative;
+}
 
 .emoji{
   padding: 0px 1px;
@@ -289,10 +293,13 @@ li:nth-child(2) .active svg {
 }
 
 .modal{
-  padding: 16px;
-  margin-top: 50px;
+  padding: 2px;
+  margin-top: 80px;
   background-color: white;
   border-radius: 16px;
+  max-height: 600px;
+  overflow: auto;
+  padding-top: 0px;
 }
 
 .close-modal-svg{
@@ -302,6 +309,7 @@ li:nth-child(2) .active svg {
 }
 .close-modal{
   width: fit-content;
+  height: 36px;
 }
 .close-modal-svg:hover{
   background-color: rgba(220, 220, 220, 0.438);
@@ -314,5 +322,46 @@ li:nth-child(2) .active svg {
 .home-modal .tweet-write-content__control{
   min-height: 100px;
   border-bottom: 1px solid rgb(239, 243, 244);
+}
+.modal-header{
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  padding: 12px 0px;
+  position: sticky;
+  top: 0px;
+  background-color: rgba(255, 255, 255, 0.918);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+.modal-flex{
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title{
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.save-button{
+  background-color: black;
+  color: white;
+  font-size: 1.03rem;
+  font-weight: 600;
+  padding: .35rem 1rem;
+  border-radius: 25px;
+  font-family: inherit;
+  transition: 200ms;
+  border: none;
+}
+.save-button:hover{
+  background-color: #282c34;
+}
+.centered{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 /* 720px */

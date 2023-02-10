@@ -1,8 +1,9 @@
-import { arrayRemove, arrayUnion, collection, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Signin from "../Main/Signin"
 import '../../assets/css/RightBar.css'
+import UserPreview from "../Main/UserPreview"
 
 function RightBar() {
     const [users, setUsers] = useState([])
@@ -10,7 +11,7 @@ function RightBar() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchUsers = async (user) => {
-        const q = query(collection(getFirestore(), 'users'), where('followers', 'not-in', [user.tag]), orderBy('followers'))
+        const q = query(collection(getFirestore(), 'users'), where('id', '!=', user.id), orderBy('id'), orderBy('followers_count', 'desc'))
         onSnapshot(q, (data) => setUsers(data.docs))
         const users = await getDocs(q)
         setUsers(users.docs)
@@ -24,8 +25,8 @@ function RightBar() {
                     followers: arrayUnion(userP.user.tag),
                     followers_count: increment(1)
                 })
-                await updateDoc(getDoc(getFirestore(), 'users', userP.user.id), 
-                    {following_count: increment(1)}
+                await updateDoc(doc(getFirestore(), 'users', userP.user.id),
+                    { following_count: increment(1) }
                 )
             }
             else {
@@ -33,8 +34,8 @@ function RightBar() {
                     followers: arrayRemove(userP.user.tag),
                     followers_count: increment(-1)
                 })
-                await updateDoc(getDoc(getFirestore(), 'users', userP.user.id),
-                    {following_count: increment(-1)}
+                await updateDoc(doc(getFirestore(), 'users', userP.user.id),
+                    { following_count: increment(-1) }
                 )
             }
         } catch (error) {
@@ -53,14 +54,14 @@ function RightBar() {
     return (
         <section className="right-bar">
             <Signin />
-            {userP.user && users.map(user => (
-                user.data().tag !== userP.user.tag && (
-                    <span key={user.data().tag}>
-                        <div className="username">{user.data().name}</div>
-                        <button onClick={() => handleFollow(user)}>{user.data().followers.includes(userP.user.tag) ? 'Unfollow' : 'Follow'}</button>
-                    </span>
-                )
-            ))}
+            <div className="who-to-follow">
+                <h2 className="title">Who to Follow</h2>
+                {userP.user && users.map(user => (
+                    <UserPreview data={user.data()}>
+                        <button className="follow-button" onClick={()=>handleFollow(user)}>Follow</button>
+                    </UserPreview>
+                ))}
+            </div>
         </section>
     )
 }
