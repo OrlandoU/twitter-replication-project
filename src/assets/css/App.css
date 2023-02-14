@@ -111,6 +111,7 @@ li:nth-child(2) .active svg {
   border: none;
   border-radius: 50px;
   width: 100%;
+  font-family: inherit;
   padding: .95rem 3rem;
 }
 
@@ -369,4 +370,8 @@ li:nth-child(2) .active svg {
 nav .tweet-header{
   flex-direction: column;
   gap: 0px;
+}
+.input-file{
+  visibility: hidden;
+  position: absolute;
 }

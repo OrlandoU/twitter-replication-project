@@ -26,7 +26,10 @@ function MessageBox() {
                 storageUri: [],
             })
             await updateDoc(doc(getFirestore(), 'chats', url.chatId),
-                { updated_at: timestamp }
+                {
+                    updated_at: timestamp,
+                    last_message: messageContent,
+                }
             )
 
             if (file) {
@@ -86,6 +89,7 @@ function MessageBox() {
     }
 
     const handleFile = (e) => {
+        console.log(e)
         setFile(e.target.files[0])
     }
 
@@ -97,6 +101,10 @@ function MessageBox() {
     const handleEmojiClick = (e) => {
         e.stopPropagation()
         setEmojiModal(true)
+    }
+
+    const handleRemoveMedia = () => {
+        setFile(false)
     }
 
 
@@ -114,13 +122,14 @@ function MessageBox() {
             <div className="message-write">
                 {file && <div className="tweet-media">
                     <div className="tweet-media-wrapper">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" class="message-media-remove" onClick={handleRemoveMedia}><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg>
                         <img src={URL.createObjectURL(file)} alt="Tweet media" key={file} />
                     </div>
                 </div>}
                 <div className="message-write-options">
                     <div className="write-left-options">
-                        <label htmlFor="media-tweet" className='media-message'>
-                            <input type="file" id='media-tweet' style={{ display: 'none' }} onChange={handleFile} />
+                        <label htmlFor="media-tweet-message" className='media-message'>
+                            <input type="file" id='media-tweet-message' className="input-file" onChange={handleFile} />
                             <svg className='sub-options' viewBox="0 0 24 24" aria-hidden="true" ><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g></svg>
                         </label>
                         <label htmlFor="emoji-tweet" className='media-message' onClick={handleEmojiClick}>

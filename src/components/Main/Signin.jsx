@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
-function Signin({ setModalHeader, setNonClosable }) {
+function Signin({ setModalHeader, setNonClosable, isGmail }) {
     const user = useContext(UserContext)
     const [errorEmail, setErrorEmail] = useState()
     const [stage, setStage] = useState(0)
@@ -16,19 +16,13 @@ function Signin({ setModalHeader, setNonClosable }) {
     const [profilePic, setProfilePic] = useState()
     const [progress, setProgress] = useState(0)
 
-    const reset = () => {
-        setErrorEmail()
-        setStage(0)
-        setName('')
-        setEmail('')
-        setTag('')
-        setPassword('')
-    }
 
     const createUser = async () => {
         setProgress(.3)
         try {
-            await createUserWithEmailAndPassword(getAuth(), email, password)
+            if(!isGmail){
+                await createUserWithEmailAndPassword(getAuth(), email, password)
+            }
             setProgress(.4)
             setDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid), {
                 tag,
@@ -41,8 +35,9 @@ function Signin({ setModalHeader, setNonClosable }) {
                 tweets_count: 0,
                 tag_substring: tag.split('').map((el, index) => name.slice(0, index + 1).toLowerCase()),
                 followers_count: 0,
+                following_count: 0,
                 name_substring: name.split('').map((el, index) => name.slice(0, index + 1).toLowerCase()),
-                profile_pic: profilePic || 'https://i.pinimg.com/736x/35/99/27/359927d1398df943a13c227ae0468357.jpg',
+                profile_pic: profilePic ? '' :'https://i.pinimg.com/736x/35/99/27/359927d1398df943a13c227ae0468357.jpg',
                 created_at: new Date().getTime(),
                 id: getAuth().currentUser.uid
             })
@@ -51,7 +46,6 @@ function Signin({ setModalHeader, setNonClosable }) {
             if (profilePic) {
                 let filePath = `users-media/${userData.data().id}/profile_pic`;
                 let newImageRef = ref(getStorage(), filePath);
-                deleteObject(newImageRef)
                 let fileSnapshot = await uploadBytesResumable(newImageRef, profilePic);
 
                 let publicImageUrl = await getDownloadURL(newImageRef);
@@ -62,6 +56,8 @@ function Signin({ setModalHeader, setNonClosable }) {
                     storageUri: fileSnapshot.metadata.fullPath,
                 });
             }
+            document.body.style.overflow = 'initial'
+            userData = await getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid))
             setProgress(1)
             user.setUser(userData.data())
         } catch (error) {
@@ -72,6 +68,10 @@ function Signin({ setModalHeader, setNonClosable }) {
 
 
     const handleStage1 = async (e) => {
+        if(isGmail){
+            setStage(prev=>prev + 1)
+            return
+        }
         e.preventDefault()
         const q = query(collection(getFirestore(), 'users'), where('email', '==', email))
         const emailDocs = await getDocs(q)
@@ -119,6 +119,10 @@ function Signin({ setModalHeader, setNonClosable }) {
 
 
     useEffect(() => {
+        if(isGmail){
+            setModalHeader(`Step ${stage + 1} of 2`)
+            return
+        }
         setModalHeader(`Step ${stage + 1} of 3`)
     }, [stage])
 
@@ -135,11 +139,12 @@ function Signin({ setModalHeader, setNonClosable }) {
                             <div className="letter-count">{name.length} / 50</div>
                         </label>
 
-                        <label htmlFor="profile-mail-modal" className="input-label">
-                            <input className={errorEmail ? "profile-mail error inputs" : "profile-mail inputs"} type="email" id="profile-bio-modal" value={email} onChange={handleEmailChange} required />
-                            <div className={email.length ? "label-text" : "label-text expanded"}>Email</div>
-                            <div className="error-email">{errorEmail}</div>
-                        </label>
+                        {!isGmail &&
+                            <label htmlFor="profile-mail-modal" className="input-label">
+                                <input className={errorEmail ? "profile-mail error inputs" : "profile-mail inputs"} type="email" value={email} onChange={handleEmailChange} required />
+                                <div className={email.length ? "label-text" : "label-text expanded"}>Email</div>
+                                <div className="error-email">{errorEmail}</div>
+                            </label>}
 
                         <div className="birthday-header">
                             <h4 className="title birthday">Birthday</h4>
@@ -147,7 +152,7 @@ function Signin({ setModalHeader, setNonClosable }) {
                         </div>
                         <div className="date-containers">
                             <label htmlFor="profile-mail-modal" className="input-label">
-                                <input value={date} type='Date' className="profile-mail inputs" id="profile-bio-modal" onChange={handleDateChange} required />
+                                <input value={date} type='Date' className="profile-mail inputs" onChange={handleDateChange} required />
                                 <div className="label-text" >Date</div>
                             </label>
                         </div>
@@ -156,7 +161,7 @@ function Signin({ setModalHeader, setNonClosable }) {
                 </form>
             </>
         )
-    } if (stage === 1) {
+    } if (stage === 1 && !isGmail) {
         return (
             <>
                 <div className="loadBar-modal" style={{ transform: `scaleX(${progress})` }}></div>
@@ -175,7 +180,7 @@ function Signin({ setModalHeader, setNonClosable }) {
             </>
         )
     }
-    if (stage === 2) {
+    if (stage === 2 || isGmail) {
         return (
             <>
                 <div className="loadBar-modal" style={{ transform: `scaleX(${progress})` }}></div>

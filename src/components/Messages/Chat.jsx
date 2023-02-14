@@ -20,28 +20,38 @@ function Chat() {
         setLoaded(true)
     }
 
+    const loadModal = () => {
+        document.getElementById('newMesRef').click()
+    }
+
     useEffect(() => {
-        if (url.chatId) {
-            setMessages([])
-            fetchMessages(url.chatId)
-        }
-    }, [url.chatId])
+        setMessages([])
+        fetchMessages(url.chatId)
+    }, [])
 
     return (
-        <main className="messages-main">
-            {loaded ?
+        <main className={!loaded || !url.chatId ? "messages-main center" : 'messages-main'}>
+            {loaded || !url.chatId ?
                 <>
-                    <div className="messages-container">
-                        {messages.map(message => (
-                            <Message message={message.data()} />
-                        ))}
-                    </div>
-                    <div className="message-input-container">
-                        <MessageBox />
-                    </div>
+                    {url.chatId ?
+                        <>
+                            <div className="messages-container">
+                                {messages.map(message => (
+                                    <Message message={message.data()} />
+                                ))}
+                            </div>
+                            <div className="message-input-container">
+                                <MessageBox />
+                            </div>
+                        </>
+                        :
+                        <div className="chat-placeholder">
+                            <div className="chat-placeholder-header">Select a message</div>
+                            <p>Drop a line, share Tweets and more with private conversations between you and others on Twitter. </p>
+                            <button className="tweet-button chat-new-message" onClick={loadModal}>New Message</button>
+                        </div>}
                 </>
-                :
-                <Loader />}
+                : <Loader />}
         </main>
     )
 }

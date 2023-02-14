@@ -6,9 +6,9 @@ import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
 import UserPreview from "../Main/UserPreview"
 
-function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef }) {
+function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef, isModaled }) {
     const [emojiModal, setEmojiModal] = useState(false)
-    const [clicked, setClicked] = useState(false)
+    const [clicked, setClicked] = useState(isModaled)
     const user = useContext(UserContext)
     const textareaRef = useRef()
     const savedSelectionRef = useRef(null);
@@ -29,7 +29,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
         const q = query(collection(getFirestore(), 'users'), where('tag_substring', 'array-contains', search))
         const users = await getDocs(q)
         cb(users.docs.map(user => {
-            return { ...user.data(), id:user.data().tag, display: user.data().tag, originalId: user.data().id }
+            return { ...user.data(), id: user.data().tag, display: user.data().tag, originalId: user.data().id }
         }
         ))
     }
@@ -43,7 +43,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
         if (!tweetContent) return
         await createTweet(tweetContent, files, parentId, parentName, ancestorUser)
         textareaRef.current.textContent = ''
-        if(closeRef){
+        if (closeRef) {
             closeRef.current.click()
         }
         setFiles('')
@@ -51,17 +51,16 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
     }
 
     const handleFile = (e) => {
-        for (let i = 0; i < e.target.files.length; i++) {
-            setFiles(prevState => [
-                ...prevState,
-                e.target.files[i]
-            ])
-        }
+        console.log(e.target.files)
+        setFiles(prevState => [
+            ...prevState,
+            e.target.files[0]
+        ])
+
     }
 
-
     const handleEmoji = ((emoji) => {
-        setTweetContent(prev=>{
+        setTweetContent(prev => {
             let newVal = [...prev].slice(0, savedSelectionRef.current).join('') + emoji.emoji + [...prev].slice(savedSelectionRef.current).join('')
             savedSelectionRef.current++
             return newVal
@@ -70,14 +69,14 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
 
     const handleSuggestion = (entry) => {
         console.log(entry)
-        return <UserPreview data={{...entry, id:entry.originalId}} className={'suggestion'} />
+        return <UserPreview data={{ ...entry, id: entry.originalId }} className={'suggestion'} />
     }
 
     const handleDisplay = (id, display) => {
         return '@' + display
     }
 
-    const handleContainer = (e)=>{
+    const handleContainer = (e) => {
         return <div className="suggestion-container">{e}</div>
     }
 
@@ -100,16 +99,16 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
                 <div className="side-tweet">
                     <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
                 </div>
-                <div className="tweet-write" onClick={()=>textareaRef.current.focus()}>
+                <div className="tweet-write" onClick={() => textareaRef.current.focus()}>
                     <MentionsInput
                         value={tweetContent}
                         onChange={handleChange}
                         customSuggestionsContainer={handleContainer}
                         inputRef={textareaRef}
                         className='tweet-write-content'
-                        placeholder={parentId ? "Write a message": "What's Happening?"}
+                        placeholder={parentId ? "Write a message" : "What's Happening?"}
                         onBlur={savePosition}
-                        onClick={()=>setClicked(true)}>
+                        onClick={() => setClicked(true)}>
                         <Mention
                             trigger="@"
                             data={fetchUser}
@@ -119,18 +118,19 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
                             markup={'<a href="#/__display__" class=tag>@__id__</a>'}
                         />
                     </MentionsInput>
-                    {files.length > 0 && <div className="tweet-media">
-                        {files.map(media => (
-                            <div className="tweet-media-wrapper">
-                                <img src={URL.createObjectURL(media)} alt="Tweet media" key={media} />
-                            </div>
-                        ))}
-                    </div>}
+                    {files.length > 0 &&
+                        <div className="tweet-media">
+                            {files.map(media => (
+                                <div className="tweet-media-wrapper">
+                                    <img src={URL.createObjectURL(media)} alt="Tweet media" key={media.name} />
+                                </div>
+                            ))}
+                        </div>}
                     {(!parentId || clicked) &&
                         <div className="tweet-write-options">
                             <div className="write-left-options">
-                                <label htmlFor="media-tweet" className='media-tweet'>
-                                    <input type="file" id='media-tweet' style={{ display: 'none' }} multiple onChange={handleFile} />
+                                <label htmlFor={"media-tweet" + (parentId ? parentId : 'home')} className='media-tweet'>
+                                    <input type="file" id={'media-tweet' + (parentId ? parentId : 'home')} className="input-file" multiple onChange={handleFile} />
                                     <svg className='sub-options' viewBox="0 0 24 24" aria-hidden="true" ><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g></svg>
                                 </label>
                                 <label htmlFor="emoji-tweet" className='media-tweet' onClick={handleEmojiClick}>

@@ -1,16 +1,22 @@
-import { arrayRemove, arrayUnion, collection, doc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Signin from "../Main/Signin"
 import '../../assets/css/RightBar.css'
 import UserPreview from "../Main/UserPreview"
 import Modal from "../Modal"
+import Login from "../Main/Login"
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 
 function RightBar() {
+    const [count, setCount] = useState(0)
     const register = useRef()
     const [users, setUsers] = useState([])
     const [modalHeader, setModalHeader] = useState('')
     const [nonClosable, setNonClosable] = useState(false)
+    const loginRef = useRef()
+    const googleRef = useRef()
+    const registerRef = useRef()
     const userP = useContext(UserContext)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -19,6 +25,28 @@ function RightBar() {
         onSnapshot(q, (data) => setUsers(data.docs))
         const users = await getDocs(q)
         setUsers(users.docs)
+    }
+
+    const handleOpenLogin = () => {
+        document.querySelector('.modal-container.register-gen').click()
+        loginRef.current.click()
+    }
+
+    const tryGoogleLogin = async () => {
+        try {
+            const provider = new GoogleAuthProvider()
+            await signInWithPopup(getAuth(), provider)
+            let userData = await getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid))
+            if (!userData.data()) {
+                googleRef.current.click()
+            } else {
+                userP.setUser(userData.data())
+            }
+            document.querySelector('.modal-container').click()
+        } catch (error) {
+            console.error('Error login with google', error)
+        }
+
     }
 
     const handleFollow = async (userRef) => {
@@ -47,6 +75,15 @@ function RightBar() {
         }
     }
 
+    const isFallowing = (userData) => {
+        return userData.followers.includes(userP.user.tag)
+    }
+
+    const handleCreateAccount = () => {
+        document.querySelector('.modal-container.register-gen').click()
+        register.current.click()
+    }
+
     useEffect(() => {
         if (userP.user) {
             fetchUsers(userP.user)
@@ -57,28 +94,64 @@ function RightBar() {
 
     return (
         <>
+            <span ref={googleRef}></span>
             {!userP.user &&
-                <Modal refToObject={register} nonClosable={nonClosable} modalHeader={modalHeader} className={'signin'}>
-                    <Signin setModalHeader={setModalHeader} setNonClosable={setNonClosable} />
-                </Modal>}
+                <>
+                    <Modal refToObject={register} nonClosable={nonClosable} modalHeader={modalHeader} className={'signin'}>
+                        <Signin setModalHeader={setModalHeader} setNonClosable={setNonClosable} key={count} />
+                    </Modal>
+                    <div className="login-footer">
+                        <div className="login-wrapper">
+                            <div className="login-text">
+                                <div className="header">Don't miss what's happening</div>
+                                <div className="sub-header">Twitter users are the first to know.</div>
+                            </div>
+                            <div className="login-footer-buttons">
+                                <button ref={loginRef} onClick={() => setCount(prev => prev + 1)}>Login</button>
+                                <button ref={registerRef} id={'registerRef'}>Register</button>
+                            </div>
+                        </div>
+                    </div>
+                    <Modal refToObject={loginRef} className={'signin signin-gen'} >
+                        <Login key={count} googleRef={googleRef} />
+                    </Modal>
+                    <Modal refToObject={registerRef} className={'signin register-gen'}>
+                        <form className={'login-form'}>
+                            <h1 className="title">Join Twitter Now</h1>
+                            <button className="register-button" type="button" onClick={tryGoogleLogin}>
+                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" ><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
+                                <span>Login with Google</span>
+                            </button>
+
+                            <div className="register-or"><span>or</span></div>
+                            <button className="register-button" type="button" onClick={handleCreateAccount}>
+                                <span>Create Account</span>
+                            </button>
+                            <div className="register-redirect">
+                                <span className="grayed">Do you already have an account?</span> <span className="pseudolink" onClick={handleOpenLogin}>Log in</span>
+                            </div>
+                        </form>
+                    </Modal>
+                    <Modal refToObject={googleRef} nonClosable={nonClosable} modalHeader={modalHeader} className={'signin'}>
+                        <Signin setModalHeader={setModalHeader} setNonClosable={setNonClosable} key={count} isGmail />
+                    </Modal>
+                </>
+            }
             <section className="right-bar">
-                <div className="register-container">
-                    <h2 className="title">New on Twitter?</h2>
-                    <button className="register-button" type="button">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="LgbsSe-Bz112c"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
-                        <span>Login with Google</span>
-                    </button>
-                    <button className="register-button" type="button">
-                        <svg viewBox="0 0 24 24" aria-hidden="true" class="r-18jsvk2 r-4qtqp9 r-yyyyoo r-z80fyv r-1d4mawv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03"><g><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.955 4.45z"></path></g></svg>
-                        <span>Login with Apple</span>
-                    </button>
-                    <button className="register-button" ref={register}>Create Account</button>
-                </div>
+                {!userP.user &&
+                    <div className="register-container">
+                        <h2 className="title">New on Twitter?</h2>
+                        <button className="register-button" type="button" onClick={tryGoogleLogin}>
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="LgbsSe-Bz112c"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
+                            <span>Register with Google</span>
+                        </button>
+                        <button className="register-button" ref={register} onClick={() => setCount(prev => prev + 1)}>Create Account</button>
+                    </div>}
                 {userP.user && <div className="right-bar-box">
                     <h2 className="title">Who to Follow</h2>
                     {userP.user && users.map(user => (
                         <UserPreview data={user.data()} className='who-to-follow'>
-                            <button className="follow-button" onClick={() => handleFollow(user)}>Follow</button>
+                            <button className={isFallowing(user.data()) ? "unfollow-button" : "follow-button"} onClick={() => handleFollow(user)}>{isFallowing(user.data()) ? "Unfollow" : "Follow"}</button>
                         </UserPreview>
                     ))}
                 </div>}

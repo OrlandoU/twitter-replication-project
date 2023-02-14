@@ -67,7 +67,7 @@ function TweetExp() {
             let q = query(collection(getFirestore(), 'tweets'), where('parent_tweet', '==', urlParams.tweetId), where('userTag', '==', id), orderBy('created_at'))
             let tweet = await getDocs(q)
             setMyReplies(tweet.docs)
-            onSnapshot(q, (data)=>(setMyReplies(data.docs)))
+            onSnapshot(q, (data) => (setMyReplies(data.docs)))
         } catch (error) {
             console.error('Error fetching tweet replies', error)
         }
@@ -98,9 +98,16 @@ function TweetExp() {
             await updateDoc(doc(getFirestore(), 'tweets', tweetId), {
                 liked_by: arrayRemove(user.user.tag)
             })
+            await updateDoc(doc(getFirestore(), 'notifications', tweetId + '-likes'), {
+                users: arrayRemove(user.user.id),
+            })
         } else {
             await updateDoc(doc(getFirestore(), 'tweets', tweetId), {
                 liked_by: arrayUnion(user.user.tag)
+            })
+            await updateDoc(doc(getFirestore(), 'notifications', tweetId + '-likes'), {
+                users: arrayUnion(user.user.id),
+                updated_at: new Date().getTime()
             })
         }
     }
@@ -113,9 +120,15 @@ function TweetExp() {
                 retweeted_by: arrayRemove(user.user.tag)
             })
             await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(-1) })
-
+            await updateDoc(doc(getFirestore(), 'notifications', tweetId + '-retweets'), {
+                users: arrayRemove(user.user.id)
+            })
             await deleteDoc(doc(getFirestore(), 'tweets', tweetId + user.user.id))
         } else {
+            await updateDoc(doc(getFirestore(), 'notifications', tweetId + '-retweets'), {
+                users: arrayUnion(user.user.id),
+                updated_at: new Date().getTime()
+            })
             await updateDoc(doc(getFirestore(), 'tweets', tweetId), {
                 retweeted_by: arrayUnion(user.user.tag)
             })

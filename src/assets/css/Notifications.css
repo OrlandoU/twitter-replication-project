@@ -1,0 +1,65 @@
+.notification-title{
+    margin-top: 0px;
+}
+
+.notification-header{
+    padding: 8px 16px 0px 16px;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.829);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0px;
+    border-bottom: 1px solid rgb(239, 243, 244);
+}
+
+.notification-header .profile-navbar{
+    border: 0px;
+}
+
+.notification-svg{
+    height: 30px;
+    width: 30px;
+}
+
+.notification-svg.like{
+    fill: rgb(249, 24, 128);
+}
+.notification-svg.retweet {
+    fill: rgb(0, 186, 124);
+}
+
+.notification-main .side-tweet{
+    width: 48px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.notifications-users img{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.notifications-users{
+    display: flex;
+    gap: 5px;
+}
+.noti-name{
+    font-weight: 600;
+}
+.noti-tweet-content{
+    color: rgb(83, 100, 113);
+    text-align: left;
+} 
+
+.notification-main .main-tweet-content{
+    gap: 12px;
+}
+
+.notification-main .tweet{
+    padding: 16px;
+}
+.noti-wrapper{
+    font-size: 1.05rem;
+}

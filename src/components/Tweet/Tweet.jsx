@@ -7,7 +7,7 @@ import UserPreview from "../Main/UserPreview";
 import Modal from "../Modal";
 import TweetRep from "./TweetRep";
 
-function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
+function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
     const replyRef = useRef()
     const closeRef = useRef()
     const [tweet, setTweet] = useState({})
@@ -24,17 +24,26 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
         e.stopPropagation()
         if (!user.user) return false
         if (liked) {
+            setLiked(false)
             await updateDoc(doc(getFirestore(), 'tweets', id), {
                 liked_by: arrayRemove(user.user.tag),
                 likes: increment(-1)
             })
-            setLiked(false)
+            await updateDoc(doc(getFirestore(), 'notifications', id + '-likes'), {
+                users: arrayRemove(user.user.id)
+            })
         } else {
+            setLiked(true)
             await updateDoc(doc(getFirestore(), 'tweets', id), {
                 liked_by: arrayUnion(user.user.tag),
                 likes: increment(1)
             })
-            setLiked(true)
+            if (!(tweet.userTag === user.user.tag)) {
+                await updateDoc(doc(getFirestore(), 'notifications', id + '-likes'), {
+                    users: arrayUnion(user.user.id),
+                    updated_at: new Date().getTime()
+                })
+            }
         }
     }
 
@@ -48,7 +57,9 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
             })
             await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(-1) })
             await deleteDoc(doc(getFirestore(), 'tweets', id + user.user.id))
-
+            await updateDoc(doc(getFirestore(), 'notifications', id + '-retweets'), {
+                users: arrayRemove(user.user.id)
+            })
         } else {
             setRetweeted(true)
             await updateDoc(doc(getFirestore(), 'tweets', id), {
@@ -63,7 +74,12 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
                 retweeted_tweet: id,
                 parent_tweet: null
             })
-
+            if (!(tweet.userTag === user.user.tag)) {
+                await updateDoc(doc(getFirestore(), 'notifications', id + '-retweets'), {
+                    users: arrayUnion(user.user.id),
+                    updated_at: new Date().getTime()
+                })
+            }
         }
     }
     const handleReply = (e) => {
@@ -86,8 +102,8 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
         }
     }
 
-    const fetchTweetData = async () => {
-        const data = await getDoc(doc(getFirestore(), 'tweets', tweetData.retweeted_tweet))
+    const fetchTweetData = async (id) => {
+        const data = await getDoc(doc(getFirestore(), 'tweets', id))
         console.log(data.data())
         setTweet(data.data())
     }
@@ -121,8 +137,11 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
     }, [user.user, tweet])
 
     useEffect(() => {
-        if (tweetData.retweeted_tweet) {
-            fetchTweetData()
+        if(tweetId){
+            fetchTweetData(tweetId)
+        }
+        else if (tweetData.retweeted_tweet) {
+            fetchTweetData(tweetData.retweeted_tweet)
         } else {
             setTweet(tweetData)
         }
@@ -136,7 +155,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal }) {
             {!isModal &&
                 <Modal refToObject={replyRef} className={'tweet-modal'} ref={closeRef}>
                     <Tweet tweetData={tweet} isParent isModal />
-                    <TweetRep parentId={id} parentName={tweet.userTag} ancestorUser={tweet.parent_tweet_user} closeRef={closeRef}/>
+                    <TweetRep parentId={id} parentName={tweet.userTag} ancestorUser={tweet.parent_tweet_user} closeRef={closeRef} isModaled />
                 </Modal>}
             <UserPreview
                 className={isParent ? "tweet tweet-parent" : 'tweet'}

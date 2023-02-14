@@ -1,7 +1,7 @@
 
 function Loader(){
     return (
-        <span className="loader-spinner"></span>
+        <div className="loader-spinner"></div>
     )
 }
 

@@ -1,5 +1,5 @@
 import { getAuth, signOut } from "firebase/auth"
-import { useContext, useRef, useState } from "react"
+import { useContext, useRef } from "react"
 import { NavLink } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
 import Modal from "../Modal"

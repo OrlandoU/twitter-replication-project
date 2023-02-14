@@ -9,7 +9,7 @@ import Profile from '../Profile/Profile';
 import SideBar from './SideBar';
 import { useEffect, useState } from 'react';
 import { UserContext } from '../../Contexts/UserContext';
-import { browserSessionPersistence, getAuth, setPersistence } from 'firebase/auth';
+import { browserSessionPersistence, getAuth, setPersistence, signOut } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { addDoc, arrayUnion, collection, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
 import TweetExp from '../Tweet/TweetExp';
@@ -21,11 +21,11 @@ function App() {
   const [user, setUser] = useState()
   const location = useLocation()
 
-  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser=null) => {
+  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser = null) => {
     let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
     let tweet
     try {
-        tweet = await addDoc(collection(getFirestore(), 'tweets'), {
+      tweet = await addDoc(collection(getFirestore(), 'tweets'), {
         userId: user.id,
         userTag: user.tag,
         media_url: [],
@@ -44,11 +44,47 @@ function App() {
         created_at: new Date().getTime(),
         keywords_arr: keywords
       })
+      await setDoc(doc(getFirestore(), 'notifications', tweet.id + '-likes'), {
+        tweetId: tweet.id,
+        tweetContent: content,
+        userTag: user.tag,
+        type: 'likes',
+        text: parentId ? 'liked your Reply' : 'liked your Tweet',
+        users: [],
+        created_at: new Date().getTime(),
+        updated_at: new Date().getTime()
+      })
+      await setDoc(doc(getFirestore(), 'notifications', tweet.id + '-retweets'), {
+        tweetId: tweet.id,
+        tweetContent: content,
+        userTag: user.tag,
+        type: 'retweets',
+        text: parentId ? 'Retweeted your Reply' : 'Retweeted your Tweet',
+        users: [],
+        created_at: new Date().getTime(),
+        updated_at: new Date().getTime()
+      })
+      if (parentId) {
+        await updateDoc(doc(getFirestore(), 'tweets', parentId), {
+          replied_by: arrayUnion(user.tag),
+          thread_children: (parent_tweet_name === user.tag || ancestorUser === user.tag) ? arrayUnion(tweet.id) : arrayUnion()
+        })
+        if (parent_tweet_name !== user.tag) {
+          await setDoc(doc(getFirestore(), 'notifications', tweet.id + parent_tweet_name), {
+            userTag: parent_tweet_name,
+            type: 'mention',
+            tweetId: tweet.id,
+            created_at: new Date().getTime(),
+            updated_at: new Date().getTime()
+          })
+        }
+      }
+
       await updateDoc(doc(getFirestore(), 'users', user.id), {
-        tweets_count : increment(1)
+        tweets_count: increment(1)
       })
 
-      for(let file of files){
+      for (let file of files) {
         let filePath = `tweet-media/${tweet.id}/${file.name}`;
         let newImageRef = ref(getStorage(), filePath);
         let fileSnapshot = await uploadBytesResumable(newImageRef, file);
@@ -60,19 +96,14 @@ function App() {
           media_url: arrayUnion(publicImageUrl),
           storageUri: arrayUnion(fileSnapshot.metadata.fullPath),
 
-        }); 
+        });
       }
 
-      if (parentId) {
-        await updateDoc(doc(getFirestore(), 'tweets', parentId), {
-          replied_by: arrayUnion(user.tag),
-          thread_children: (parent_tweet_name === user.tag || ancestorUser === user.tag) ? arrayUnion(tweet.id): arrayUnion()
-        })
-      }
+
     } catch (error) {
       console.error('Error creating tweet', error)
     }
-    
+
 
 
     keywords.forEach(async keyword => {
@@ -118,6 +149,10 @@ function App() {
         // ...
         // New sign-in will be persisted with session persistence.
         getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid)).then((userData) => {
+          if (!userData.data()) {
+            signOut(getAuth())
+            return
+          }
           console.log(userData.id)
           setUser(userData.data())
         })
@@ -138,13 +173,13 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/explore' element={<Explore />} />
-            <Route path='/notifications' element={<Notifications />} />
-            <Route path='/messages/:type?/:chatId?' element={<Messages />} />
+            <Route path='/notifications/*' element={<Notifications />} />
+            <Route path='/messages/*' element={<Messages />} />
             <Route path='/bookmarks' element={<Bookmarks />} />
             <Route path='/:profileTag/*' element={<Profile />} />
             <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
           </Routes>
-          
+
         </CreateTweetContext.Provider>
       </UserContext.Provider>
     </div>
