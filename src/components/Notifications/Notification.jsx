@@ -1,11 +1,16 @@
-import { doc, getDoc, getFirestore } from "firebase/firestore"
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore"
+import { useContext } from "react"
 import { useEffect, useRef } from "react"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { UserContext } from "../../Contexts/UserContext"
 
-function Notification({ data }) {
+function Notification({ data, collectionRef }) {
     const [loading, setLoading] = useState(false)
     const [typeSvg, setTypeSvg] = useState()
     const [users, setUsers] = useState([])
+    const user = useContext(UserContext).user
+    const navigate = useNavigate()
     const mounted = useRef()
 
     const fetchUsers = async () => {
@@ -25,10 +30,23 @@ function Notification({ data }) {
         }
     }
 
+    const handleView = async () => {
+        await updateDoc(collectionRef, {
+            viewed: true,
+        })
+    }
+
+    const navigateToTweet = () => {
+        if(data.tweetId){
+            navigate(`/${user.tag}/status/${data.tweetId}`)
+        }
+    }
+
     useEffect(() => {
         if(!mounted.current){
             getSvg()
             fetchUsers()
+            handleView()
             mounted.current = true
         }
     }, [])
@@ -43,7 +61,7 @@ function Notification({ data }) {
 
     return (
             <>
-                <div className='tweet noti-wrapper'>
+                <div className='tweet noti-wrapper' onClick={navigateToTweet}>
                     <div className="tweet-wrapper">
                         <div className="side-tweet">
                             {typeSvg}
@@ -56,7 +74,7 @@ function Notification({ data }) {
                             </div>
                             <div className={"tweet-header"}>
                                 <div>
-                                <span className="noti-name">{users[0].name}</span> {users.length === 2 && ' and ' + users[1].name} {users.length > 2 && ' and others '} {data.text}
+                                <span className="noti-name">{users[0].name}</span> {users.length === 2 && ' and '} {users.length === 2 && <span className="noti-name">{users[1].name}</span>} {users.length > 2 && ' and others '} {data.text}
                                 </div>
                             </div>
                             <div className="noti-tweet-content">

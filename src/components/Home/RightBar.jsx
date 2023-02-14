@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Signin from "../Main/Signin"
@@ -7,6 +7,7 @@ import UserPreview from "../Main/UserPreview"
 import Modal from "../Modal"
 import Login from "../Main/Login"
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import SearchBar from "./SearchBar"
 
 function RightBar() {
     const [count, setCount] = useState(0)
@@ -60,6 +61,15 @@ function RightBar() {
                 await updateDoc(doc(getFirestore(), 'users', userP.user.id),
                     { following_count: increment(1) }
                 )
+                await setDoc(doc(getFirestore(), 'notifications', userRef.id + 'follow'), {
+                    userTag: userData.tag,
+                    type: 'likes',
+                    viewed: false,
+                    text: 'followed you',
+                    users: [userRef.id],
+                    created_at: new Date().getTime(),
+                    updated_at: new Date().getTime()
+                })
             }
             else {
                 await updateDoc(userRef.ref, {
@@ -69,6 +79,7 @@ function RightBar() {
                 await updateDoc(doc(getFirestore(), 'users', userP.user.id),
                     { following_count: increment(-1) }
                 )
+                await deleteDoc(doc(getFirestore(), 'notifications', userRef.id + 'follow'))
             }
         } catch (error) {
             console.error('Error handling follow request', error)
@@ -138,6 +149,7 @@ function RightBar() {
                 </>
             }
             <section className="right-bar">
+                <SearchBar />
                 {!userP.user &&
                     <div className="register-container">
                         <h2 className="title">New on Twitter?</h2>

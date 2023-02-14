@@ -2,7 +2,6 @@ import { collection, getDocs, getFirestore, orderBy, query, where } from "fireba
 import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Loader from "../Loader"
-import Tweet from "../Tweet/Tweet"
 import Notification from "./Notification"
 
 function All() {
@@ -36,7 +35,7 @@ function All() {
         <>
             {
                 notifications.map((noti, index) => (
-                    <Notification data={noti.data()} key={index} />
+                    <Notification data={noti.data()} key={index} collectionRef={noti.ref}/>
                 ))
             }
         </>

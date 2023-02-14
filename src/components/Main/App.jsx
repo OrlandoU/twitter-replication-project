@@ -15,6 +15,7 @@ import { addDoc, arrayUnion, collection, doc, getDoc, getFirestore, increment, s
 import TweetExp from '../Tweet/TweetExp';
 import stopWords from '../../Stop-Words'
 import { CreateTweetContext } from '../../Contexts/CreateTweetContexts';
+import Query from '../query/Query';
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
         type: 'likes',
         text: parentId ? 'liked your Reply' : 'liked your Tweet',
         users: [],
+        viewed: false,
         created_at: new Date().getTime(),
         updated_at: new Date().getTime()
       })
@@ -58,6 +60,7 @@ function App() {
         tweetId: tweet.id,
         tweetContent: content,
         userTag: user.tag,
+        viewed: false,
         type: 'retweets',
         text: parentId ? 'Retweeted your Reply' : 'Retweeted your Tweet',
         users: [],
@@ -73,6 +76,7 @@ function App() {
           await setDoc(doc(getFirestore(), 'notifications', tweet.id + parent_tweet_name), {
             userTag: parent_tweet_name,
             type: 'mention',
+            viewed: false,
             tweetId: tweet.id,
             created_at: new Date().getTime(),
             updated_at: new Date().getTime()
@@ -176,6 +180,7 @@ function App() {
             <Route path='/notifications/*' element={<Notifications />} />
             <Route path='/messages/*' element={<Messages />} />
             <Route path='/bookmarks' element={<Bookmarks />} />
+            <Route path='/query/:query/*' element={<Query />}/>
             <Route path='/:profileTag/*' element={<Profile />} />
             <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
           </Routes>
