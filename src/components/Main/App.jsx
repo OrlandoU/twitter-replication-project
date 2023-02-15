@@ -24,14 +24,17 @@ function App() {
 
   const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser = null) => {
     let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
+    let substring = keywords.map(word => word.split('').map((el, index) => word.slice(0, index + 1).toLowerCase()))
     let tweet
     try {
       tweet = await addDoc(collection(getFirestore(), 'tweets'), {
         userId: user.id,
         userTag: user.tag,
         media_url: [],
+        hasMedia: files.length > 0,
         parent_tweet: parentId,
         parent_tweet_user: parent_tweet_name,
+        search_substring: [].concat(...substring),
         thread_children: [],
         thread_size: 0,
         retweeted_by: [],
@@ -41,6 +44,7 @@ function App() {
         likes: 0,
         replied_by: [],
         replies_count: 0,
+        bookmarked_by: [],
         content: content,
         created_at: new Date().getTime(),
         keywords_arr: keywords
@@ -102,8 +106,6 @@ function App() {
 
         });
       }
-
-
     } catch (error) {
       console.error('Error creating tweet', error)
     }

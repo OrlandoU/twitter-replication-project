@@ -16,7 +16,6 @@ const Modal = React.forwardRef((props, ref) => {
 
     useEffect(() => {
         if (props.refToObject.current) {
-
             props.refToObject.current.addEventListener('click', openModal)
         }
     }, [props.refToObject])

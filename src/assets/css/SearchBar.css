@@ -32,4 +32,25 @@
     width: 100%;
     outline: none;
 }
+.query{
+    padding: 16px !important;
+}
+.query .tweet-header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0px;
+}
 
+.query-user-bio{
+    text-align: left;
+    width: 100%;
+}
+.query .main-tweet-content{
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.query-user-follow{
+   flex: 1;
+   text-align: right;
+}

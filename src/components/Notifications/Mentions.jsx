@@ -3,18 +3,19 @@ import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Loader from "../Loader"
 import Tweet from '../Tweet/Tweet'
-import Notification from "./Notification"
 
-function All() {
+function Mention() {
     const user = useContext(UserContext).user
-    const [notifications, setNotifications] = useState([])
+    const [mentions, setMentions] = useState([])
     const [loaded, setLoaded] = useState(false)
 
     const fetchTweets = async () => {
         try {
-            const q = query(collection(getFirestore(), 'notifications'), where('userTag', '==', user.tag), orderBy('updated_at', 'desc'))
+            console.log(user.tag)
+            const q = query(collection(getFirestore(), 'notifications'), where('userTag', '==', user.tag), where('type', '==', 'mention' ), orderBy('updated_at', 'desc'))
             const notification = await getDocs(q)
-            setNotifications(notification.docs)
+            console.log(notification)
+            setMentions(notification.docs)
             setLoaded(true)
         } catch (error) {
             console.error('Error fetching notifications', error)
@@ -35,12 +36,12 @@ function All() {
     return (
         <>
             {
-                notifications.map((noti, index) => (
-                    noti.data().type === 'mention' ? <Tweet tweetId={noti.data().tweetId} /> :<Notification data={noti.data()} key={index} collectionRef={noti.ref}/> 
+                mentions.map((mention) => (
+                    <Tweet tweetId={mention.data().tweetId} />
                 ))
             }
         </>
     )
 }
 
-export default All
+export default Mention

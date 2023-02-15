@@ -63,7 +63,7 @@ function RightBar() {
                 )
                 await setDoc(doc(getFirestore(), 'notifications', userRef.id + 'follow'), {
                     userTag: userData.tag,
-                    type: 'likes',
+                    type: 'follow',
                     viewed: false,
                     text: 'followed you',
                     users: [userRef.id],

@@ -1,12 +1,12 @@
 import EmojiPicker from "emoji-picker-react"
-import { collection, getDocs, getFirestore, query, where } from "firebase/firestore"
+import { collection, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { Mention, MentionsInput } from "react-mentions"
 import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
 import { UserContext } from "../../Contexts/UserContext"
 import UserPreview from "../Main/UserPreview"
 
-function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef, isModaled }) {
+function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef, isModaled, reload }) {
     const [emojiModal, setEmojiModal] = useState(false)
     const [clicked, setClicked] = useState(isModaled)
     const user = useContext(UserContext)
@@ -46,12 +46,14 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
         if (closeRef) {
             closeRef.current.click()
         }
+        if (reload) {
+            reload()
+        }
         setFiles('')
         setTweetContent('')
     }
 
     const handleFile = (e) => {
-        console.log(e.target.files)
         setFiles(prevState => [
             ...prevState,
             e.target.files[0]

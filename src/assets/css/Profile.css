@@ -193,6 +193,9 @@
 .profile-modal.modal{
     margin: 0px;
 }
+.profile-info-modal .inputs{
+        font-family: inherit;
+}
 
 .profile-info-modal label {
     position: relative;
@@ -234,7 +237,7 @@
 }
 
 .profile-bio{
-    height: 120px !important;
+    text-align: left;
 }
 
 textarea{

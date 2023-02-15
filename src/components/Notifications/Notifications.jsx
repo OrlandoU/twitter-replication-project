@@ -2,6 +2,7 @@ import { NavLink, Route, Routes, useParams } from 'react-router-dom'
 import RightBar from '../Home/RightBar'
 import '../../assets/css/Notifications.css'
 import All from './All'
+import Mentions from './Mentions'
 
 function Notifications() {
     const url = useParams()
@@ -17,7 +18,7 @@ function Notifications() {
                 </div>
                 <Routes>
                     <Route path={'/'} element={<All />} />
-                    <Route path={'/mentions'} element={<div></div>} />
+                    <Route path={'/mentions'} element={<Mentions />} />
                 </Routes>
             </main>
             <RightBar />

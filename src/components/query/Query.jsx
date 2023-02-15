@@ -1,5 +1,8 @@
 import { NavLink, Route, Routes, useParams } from "react-router-dom"
 import SearchBar from "../Home/SearchBar"
+import Lastest from "./Lastest"
+import People from "./People"
+import Top from "./Top"
 
 function Query(){
     const url = useParams()
@@ -7,7 +10,7 @@ function Query(){
     return (
         <main>
             <div className="notification-header">
-                <SearchBar />
+                <SearchBar value={url.query}/>
                 <div className="profile-navbar">
                     <NavLink to={`.`} end={`${url.profileTag}`} className='profile-link'><span className="link-wrapper">Top</span></NavLink>
                     <NavLink to={`./lastest`} className='profile-link'><span className="link-wrapper">Lastest</span></NavLink>
@@ -17,9 +20,9 @@ function Query(){
                 </div>
             </div>
             <Routes>
-                <Route path={'/'} element={<div></div>} />
-                <Route path={'/lastest'} element={<div></div>} />
-                <Route path={'/people'} element={<div></div>} />
+                <Route path={'/'} element={<Top />} />
+                <Route path={'/lastest'} element={<Lastest />} />
+                <Route path={'/people'} element={<People />} />
                 <Route path={'/photos'} element={<div></div>} />
                 <Route path={'/videos'} element={<div></div>} />
             </Routes>

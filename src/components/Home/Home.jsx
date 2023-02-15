@@ -4,6 +4,8 @@ import {
     query,
     orderBy,
     getDocs,
+    onSnapshot,
+    where,
 } from 'firebase/firestore';
 import Tweet from '../Tweet/Tweet';
 import '../../assets/css/Home.css'
@@ -12,8 +14,11 @@ import { useEffect, useState } from 'react';
 import Loader from '../Loader';
 import RightBar from './RightBar';
 import Thread from '../Tweet/Thread';
+import { useContext } from 'react';
+import { UserContext } from '../../Contexts/UserContext';
 
 function Home() {
+    const user = useContext(UserContext).user
     const [tweets, setTweets] = useState([])
     const [loading, setLoading] = useState(true)
 
@@ -22,6 +27,11 @@ function Home() {
         const tweets = await getDocs(q)
         setTweets(tweets.docs)
         setLoading(false)
+    }
+
+    const reload = () => {
+        fetchTweets()
+        console.log(tweets)
     }
 
     useEffect(() => {
@@ -33,14 +43,13 @@ function Home() {
     return (
         <>
             <main className='home'>
-
                 {loading ?
                     <Loader /> :
                     <>
                         <h1>Home</h1>
-                        <TweetRep />
+                        <TweetRep reload={reload}/>
                         {tweets.map(tweet => (
-                            tweet.data().thread_size < 3 ? <Thread thread={tweet.id} /> : <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
+                            (tweet.data().thread_size < 3 && tweet.data().thread_size !== 0) ? <Thread thread={tweet.id} /> : <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.id} />
                         ))}
                     </>}
 

@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../../assets/css/SearchBar.css'
 
-function SearchBar() {
-    const [input, setInput] = useState('')
+function SearchBar({value = ''}) {
+    const [input, setInput] = useState(value)
     const navigate = useNavigate()
     const handleSearch = () => {
-        navigate('/query/' + input)
+        navigate('/query/' + input.toLowerCase(), {replace: true})
     }
 
     const handleInput = (e) => {

@@ -6,6 +6,8 @@ import '../../assets/css/Profile.css'
 import { UserContext } from "../../Contexts/UserContext"
 import Loader from "../Loader"
 import Modal from "../Modal"
+import Likes from "./Likes"
+import Media from "./Media"
 import Tweets from "./Tweets"
 import TweetsAndReplies from "./TweetsAndReplies"
 
@@ -203,6 +205,8 @@ function Profile() {
             <Routes>
                 <Route path={'/'} element={<Tweets />} />
                 <Route path={'/with_replies'} element={<TweetsAndReplies />} />
+                <Route path={'/media'} element={<Media />} />
+                <Route path={'/likes'} element={<Likes />} />
             </Routes>
         </main>
     )

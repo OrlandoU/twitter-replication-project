@@ -1,17 +1,22 @@
-import { doc, getDoc, getFirestore } from "firebase/firestore"
+import { arrayRemove, arrayUnion, deleteDoc, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from "firebase/firestore"
+import { useRef } from "react"
 import { forwardRef, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
+import Opt from "../Opt"
 
-const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by, isModal, isFirstMessage }, ref) => {
+const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by, isModal, isFirstMessage, hasOptions, bookmarked, handleBookmark }, ref) => {
     const mainUser = useContext(UserContext)
+    const optionRef = useRef()
     const [user, setUser] = useState({})
+    const [userRef, setUserRef] = useState({})
     const navigate = useNavigate()
 
     const fetchUser = async (id) => {
         try {
             const user = await getDoc(doc(getFirestore(), 'users', id))
             setUser(user.data())
+            setUserRef(user)
         } catch (error) {
             console.error('Error fetching user', error)
         }
@@ -46,6 +51,51 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
         e.stopPropagation()
         navigate('/' + user.tag)
     }
+
+    const handleFollow = async (userRef) => {
+        const userData = userRef.data()
+        try {
+            if (!userData.followers.includes(mainUser.user.tag)) {
+                await updateDoc(userRef.ref, {
+                    followers: arrayUnion(mainUser.user.tag),
+                    followers_count: increment(1)
+                })
+                await updateDoc(doc(getFirestore(), 'users', mainUser.user.id),
+                    { following_count: increment(1) }
+                )
+                await setDoc(doc(getFirestore(), 'notifications', userRef.id + 'follow'), {
+                    userTag: userData.tag,
+                    type: 'follow',
+                    viewed: false,
+                    text: 'followed you',
+                    users: [userRef.id],
+                    created_at: new Date().getTime(),
+                    updated_at: new Date().getTime()
+                })
+            }
+            else {
+                await updateDoc(userRef.ref, {
+                    followers: arrayRemove(mainUser.user.tag),
+                    followers_count: increment(-1)
+                })
+                await updateDoc(doc(getFirestore(), 'users', mainUser.user.id),
+                    { following_count: increment(-1) }
+                )
+                await deleteDoc(doc(getFirestore(), 'notifications', userRef.id + 'follow'))
+            }
+
+            let userUpdated = await getDoc(userRef.ref)
+            setUser(userUpdated.data())
+            setUserRef(userUpdated)
+        } catch (error) {
+            console.error('Error handling follow request', error)
+        }
+    }
+
+    const isFallowing = (userData) => {
+        return userData.followers.includes(mainUser.user.tag)
+    }
+
 
     useEffect(() => {
         if (data) {
@@ -99,6 +149,24 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                                     <div className="tweet-username" onClick={handleProfile}>{user.name}</div>
                                     <div className="tweet-usertag">@{user.tag}</div>
                                     {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
+                                    {hasOptions &&
+                                        <div className="tweet-options" ref={optionRef} onClick={(e) => e.stopPropagation()}>
+                                            <Opt triggerRef={optionRef}>
+                                                {user.id &&
+                                                    <>
+                                                        <div className="option" onClick={() => handleFollow(userRef)}>
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M10 4c-1.105 0-2 .9-2 2s.895 2 2 2 2-.9 2-2-.895-2-2-2zM6 6c0-2.21 1.791-4 4-4s4 1.79 4 4-1.791 4-4 4-4-1.79-4-4zm12.586 3l-2.043-2.04 1.414-1.42L20 7.59l2.043-2.05 1.414 1.42L21.414 9l2.043 2.04-1.414 1.42L20 10.41l-2.043 2.05-1.414-1.42L18.586 9zM3.651 19h12.698c-.337-1.8-1.023-3.21-1.945-4.19C13.318 13.65 11.838 13 10 13s-3.317.65-4.404 1.81c-.922.98-1.608 2.39-1.945 4.19zm.486-5.56C5.627 11.85 7.648 11 10 11s4.373.85 5.863 2.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H1.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46z"></path></g></svg>
+                                                            {isFallowing(user) ? "Unfollow @" + user.tag : "Follow @" + user.tag}
+                                                        </div>
+                                                        <div className="option" onClick={handleBookmark}>
+                                                            <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M17 3V0h2v3h3v2h-3v3h-2V5h-3V3h3zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V11h2v11.94l-8-5.71-8 5.71V4.5C4 3.12 5.119 2 6.5 2h4.502v2H6.5z"></path></g></svg>
+                                                            {bookmarked ? 'Remove Tweet from Bookmarks': 'Bookmark'}
+                                                        </div>
+                                                    </>
+                                                }
+                                            </Opt>
+                                            <svg viewBox="0 0 24 24" aria-hidden="true" class="sub-options"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+                                        </div>}
                                 </div>
                                 {children}
                             </div>

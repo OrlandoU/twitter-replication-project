@@ -3,6 +3,7 @@ import HTMLReactParser from "html-react-parser";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { UserContext } from "../../Contexts/UserContext";
+import Loader from "../Loader";
 import UserPreview from "../Main/UserPreview";
 import Modal from "../Modal";
 import TweetRep from "./TweetRep";
@@ -18,6 +19,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
     const [likes, setLikes] = useState()
     const [retweets, setRetweets] = useState()
     const [retweeted, setRetweeted] = useState(false)
+    const [bookmarked, setBookmarked] = useState(true)
 
 
     const handleLike = async (e) => {
@@ -25,21 +27,21 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
         if (!user.user) return false
         if (liked) {
             setLiked(false)
-            await updateDoc(doc(getFirestore(), 'tweets', id), {
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
                 liked_by: arrayRemove(user.user.tag),
                 likes: increment(-1)
             })
-            await updateDoc(doc(getFirestore(), 'notifications', id + '-likes'), {
+            await updateDoc(doc(getFirestore(), 'notifications', (id || tweetId) + '-likes'), {
                 users: arrayRemove(user.user.id)
             })
         } else {
             setLiked(true)
-            await updateDoc(doc(getFirestore(), 'tweets', id), {
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
                 liked_by: arrayUnion(user.user.tag),
                 likes: increment(1)
             })
             if (!(tweet.userTag === user.user.tag)) {
-                await updateDoc(doc(getFirestore(), 'notifications', id + '-likes'), {
+                await updateDoc(doc(getFirestore(), 'notifications', (id || tweetId) + '-likes'), {
                     users: arrayUnion(user.user.id),
                     updated_at: new Date().getTime()
                 })
@@ -52,21 +54,21 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
         if (!user.user) return false
         if (retweeted) {
             setRetweeted(false)
-            await updateDoc(doc(getFirestore(), 'tweets', id), {
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
                 retweeted_by: arrayRemove(user.user.tag)
             })
             await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(-1) })
-            await deleteDoc(doc(getFirestore(), 'tweets', id + user.user.id))
-            await updateDoc(doc(getFirestore(), 'notifications', id + '-retweets'), {
+            await deleteDoc(doc(getFirestore(), 'tweets', (id || tweetId) + user.user.id))
+            await updateDoc(doc(getFirestore(), 'notifications', (id || tweetId) + '-retweets'), {
                 users: arrayRemove(user.user.id)
             })
         } else {
             setRetweeted(true)
-            await updateDoc(doc(getFirestore(), 'tweets', id), {
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
                 retweeted_by: arrayUnion(user.user.tag)
             })
             await updateDoc(doc(getFirestore(), 'users', user.user.id), { tweets_count: increment(1) })
-            await setDoc(doc(getFirestore(), 'tweets', id + user.user.id), {
+            await setDoc(doc(getFirestore(), 'tweets', (id || tweetId) + user.user.id), {
                 userId: user.user.id,
                 userTag: user.user.tag,
                 userName: user.user.name,
@@ -75,7 +77,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
                 parent_tweet: null
             })
             if (!(tweet.userTag === user.user.tag)) {
-                await updateDoc(doc(getFirestore(), 'notifications', id + '-retweets'), {
+                await updateDoc(doc(getFirestore(), 'notifications', (id || tweetId) + '-retweets'), {
                     users: arrayUnion(user.user.id),
                     updated_at: new Date().getTime()
                 })
@@ -90,7 +92,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
     const handleView = async () => {
         if (inView) {
             try {
-                await updateDoc(doc(getFirestore(), 'tweets', id), {
+                await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
                     viewers: arrayUnion(user.user.tag),
                     views: increment(1)
                 })
@@ -102,9 +104,23 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
         }
     }
 
+    const handleBookmark = async () => {
+        if (bookmarked) {
+            setBookmarked(false)
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
+                bookmarked_by: arrayRemove(user.user.tag),
+            })
+        } else {
+            setBookmarked(true)
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
+                bookmarked_by: arrayUnion(user.user.tag),
+            })
+        }
+    }
+
     const fetchTweetData = async (id) => {
         const data = await getDoc(doc(getFirestore(), 'tweets', id))
-        console.log(data.data())
+
         setTweet(data.data())
     }
 
@@ -128,6 +144,8 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
             } else {
                 setRetweets(tweet.retweeted_by.length)
             }
+
+            setBookmarked(tweet.bookmarked_by.includes(user.user.tag))
             setLiked(tweet.liked_by.includes(user.user.tag))
             setRetweeted(tweet.retweeted_by.includes(user.user.tag))
         }
@@ -137,7 +155,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
     }, [user.user, tweet])
 
     useEffect(() => {
-        if(tweetId){
+        if (tweetId) {
             fetchTweetData(tweetId)
         }
         else if (tweetData.retweeted_tweet) {
@@ -149,6 +167,9 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
 
     if (!tweet.userId) return
 
+    if (tweet.id) {
+        return <Loader />
+    }
 
     return (
         <>
@@ -158,11 +179,14 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
                     <TweetRep parentId={id} parentName={tweet.userTag} ancestorUser={tweet.parent_tweet_user} closeRef={closeRef} isModaled />
                 </Modal>}
             <UserPreview
+                bookmarked={bookmarked}
+                handleBookmark={handleBookmark}
+                hasOptions={true}
                 className={isParent ? "tweet tweet-parent" : 'tweet'}
-                path={`/${tweet.userTag}/status/${id}`}
+                path={`/${tweet.userTag}/status/${(id || tweetId) }`}
                 id={tweet.userId}
                 time={tweet.created_at}
-                retweeted_by={tweetData.retweeted_tweet ? { tag: tweetData.userTag, name: tweetData.userName } : null}
+                retweeted_by={(tweetData && tweetData.retweeted_tweet) ? { tag: tweetData.userTag, name: tweetData.userName } : null}
                 isModal={isModal}>
 
                 {(tweet.parent_tweet_user && (index === 0)) && (

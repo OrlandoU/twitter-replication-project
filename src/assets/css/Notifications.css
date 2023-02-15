@@ -28,6 +28,10 @@
     fill: rgb(0, 186, 124);
 }
 
+.notification-svg.follow{
+    fill: rgb(29, 155, 240);
+}
+
 .notification-main .side-tweet{
     width: 48px;
     display: flex;
@@ -53,7 +57,7 @@
     text-align: left;
 } 
 
-.notification-main .main-tweet-content{
+.noti-wrapper .main-tweet-content{
     gap: 12px;
 }
 
