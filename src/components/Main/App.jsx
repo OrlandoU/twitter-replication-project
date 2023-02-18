@@ -11,18 +11,24 @@ import { useEffect, useState } from 'react';
 import { UserContext } from '../../Contexts/UserContext';
 import { browserSessionPersistence, getAuth, setPersistence, signOut } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
-import { addDoc, arrayUnion, collection, doc, getDoc, getFirestore, increment, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getDoc, getFirestore, increment, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import TweetExp from '../Tweet/TweetExp';
 import stopWords from '../../Stop-Words'
 import { CreateTweetContext } from '../../Contexts/CreateTweetContexts';
 import Query from '../query/Query';
+import Settings from '../Settings/Settings';
+import { Popup } from '../../Contexts/PopupContext';
+import { ThemeContext } from '../../Contexts/ThemeContext';
 
 
 function App() {
   const [user, setUser] = useState()
+  const [theme, setTheme] = useState(localStorage.getItem('theme-tw') || 'default')
   const location = useLocation()
+  const [popup, setPopup] = useState()
+  const [visible, setVisible] = useState()
 
-  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser = null) => {
+  const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser = null, mentions) => {
     let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
     let substring = keywords.map(word => word.split('').map((el, index) => word.slice(0, index + 1).toLowerCase()))
     let tweet
@@ -39,6 +45,7 @@ function App() {
         thread_size: 0,
         retweeted_by: [],
         viewers: [],
+        mentions: mentions.map(mention => mention.id),
         views: 0,
         liked_by: [],
         likes: 0,
@@ -47,7 +54,8 @@ function App() {
         bookmarked_by: [],
         content: content,
         created_at: new Date().getTime(),
-        keywords_arr: keywords
+        keywords_arr: keywords,
+        pinned: false,
       })
       await setDoc(doc(getFirestore(), 'notifications', tweet.id + '-likes'), {
         tweetId: tweet.id,
@@ -93,7 +101,7 @@ function App() {
       })
 
       for (let file of files) {
-        let filePath = `tweet-media/${tweet.id}/${file.name}`;
+        let filePath = `tweet-media/${user.id}/${file.name}`;
         let newImageRef = ref(getStorage(), filePath);
         let fileSnapshot = await uploadBytesResumable(newImageRef, file);
 
@@ -147,6 +155,16 @@ function App() {
   }
 
   useEffect(() => {
+    if (popup)
+      setVisible(true)
+    let timer = setTimeout(() => {
+      setVisible(false)
+      setPopup()
+      clearTimeout(timer)
+    }, 4000)
+  }, [popup])
+
+  useEffect(() => {
     setPersistence(getAuth(), browserSessionPersistence)
       .then(() => {
         // Existing and future Auth states are now persisted in the current
@@ -154,14 +172,15 @@ function App() {
         // if a user forgets to sign out.
         // ...
         // New sign-in will be persisted with session persistence.
+        const q = query(collection(getFirestore(), 'users'), where('id', '==', getAuth().currentUser.uid))
         getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid)).then((userData) => {
           if (!userData.data()) {
             signOut(getAuth())
             return
           }
-          console.log(userData.id)
           setUser(userData.data())
         })
+        onSnapshot(q, (data) => setUser(data.docs[0].data()))
       })
       .catch((error) => {
         // Handle Errors here.
@@ -169,26 +188,34 @@ function App() {
         const errorMessage = error.message;
         console.error(errorMessage, errorCode)
       });
+
   }, [])
 
   return (
-    <div className="App">
-      <UserContext.Provider value={{ user, setUser }}>
-        <CreateTweetContext.Provider value={createTweet}>
-          <SideBar />
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/explore' element={<Explore />} />
-            <Route path='/notifications/*' element={<Notifications />} />
-            <Route path='/messages/*' element={<Messages />} />
-            <Route path='/bookmarks' element={<Bookmarks />} />
-            <Route path='/query/:query/*' element={<Query />}/>
-            <Route path='/:profileTag/*' element={<Profile />} />
-            <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
-          </Routes>
-
-        </CreateTweetContext.Provider>
-      </UserContext.Provider>
+    <div className={"app-wrap " + theme}>
+      <div className="App ">
+        <ThemeContext.Provider value={setTheme}>
+          <Popup.Provider value={setPopup}>
+            <UserContext.Provider value={{ user, setUser }}>
+              <CreateTweetContext.Provider value={createTweet}>
+                <SideBar />
+                {(visible && popup) && <span className='popup'>{popup}</span>}
+                <Routes>
+                  <Route path='/' element={<Home />} />
+                  <Route path='/explore' element={<Explore />} />
+                  <Route path='/notifications/*' element={<Notifications />} />
+                  <Route path='/messages/*' element={<Messages />} />
+                  <Route path='/bookmarks' element={<Bookmarks />} />
+                  <Route path='/settings/*' element={<Settings />} />
+                  <Route path='/query/:query/*' element={<Query />} />
+                  <Route path='/:profileTag/*' element={<Profile />} />
+                  <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
+                </Routes>
+              </CreateTweetContext.Provider>
+            </UserContext.Provider>
+          </Popup.Provider>
+        </ThemeContext.Provider>
+      </div>
     </div>
   );
 }

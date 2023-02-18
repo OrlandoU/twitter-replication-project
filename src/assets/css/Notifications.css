@@ -1,69 +1,73 @@
-.notification-title{
+.notification-title {
     margin-top: 0px;
 }
 
-.notification-header{
+.notification-header {
     padding: 8px 16px 0px 16px;
     text-align: left;
-    background-color: rgba(255, 255, 255, 0.829);
+    background-color: var(--semitransparent-background);
     backdrop-filter: blur(8px);
     position: sticky;
     top: 0px;
-    border-bottom: 1px solid rgb(239, 243, 244);
+    border-bottom: 1px solid var(--border-color);
 }
 
-.notification-header .profile-navbar{
+.notification-header .profile-navbar {
     border: 0px;
 }
 
-.notification-svg{
+.notification-svg {
     height: 30px;
     width: 30px;
 }
 
-.notification-svg.like{
+.notification-svg.like {
     fill: rgb(249, 24, 128);
 }
+
 .notification-svg.retweet {
     fill: rgb(0, 186, 124);
 }
 
-.notification-svg.follow{
+.notification-svg.follow {
     fill: rgb(29, 155, 240);
 }
 
-.notification-main .side-tweet{
+.notification-main .side-tweet {
     width: 48px;
     display: flex;
     justify-content: flex-end;
 }
 
-.notifications-users img{
+.notifications-users img {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.notifications-users{
+.notifications-users {
     display: flex;
     gap: 5px;
 }
-.noti-name{
+
+.noti-name {
     font-weight: 600;
 }
-.noti-tweet-content{
-    color: rgb(83, 100, 113);
-    text-align: left;
-} 
 
-.noti-wrapper .main-tweet-content{
+.noti-tweet-content {
+    color: var(--light-font-color);
+    text-align: left;
+}
+
+.noti-wrapper .main-tweet-content {
     gap: 12px;
 }
 
-.notification-main .tweet{
+.notification-main .tweet {
     padding: 16px;
 }
-.noti-wrapper{
+
+.noti-wrapper {
     font-size: 1.05rem;
 }

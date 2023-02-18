@@ -1,0 +1,359 @@
+.setting-button {
+    height: 18.75px;
+    width: 18.75px;
+}
+
+.settings {
+    margin-top: 24px;
+}
+
+.setting {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    padding-right: 14px;
+    color: var(--font-color);
+    text-decoration: none;
+    position: relative;
+}
+
+.setting.active {
+    background-color: var(--hover-color);
+}
+
+.setting.active::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    top: 0;
+    right: -2px;
+    background-color: rgb(0, 195, 255);
+}
+
+.setting-name {
+    font-size: 1.1rem;
+}
+
+.setting:hover {
+    background-color: var(--hover-color);
+}
+
+.main-setting h2 {
+    margin-bottom: 0px;
+}
+
+.main-setting>p {
+    text-align: left;
+    padding: 0px 16px;
+    color: var(--light-font-color);
+}
+
+.account-information {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.account-information>* {
+    padding: 10px 16px;
+}
+
+.account-information h3 {
+    margin-bottom: 0px;
+}
+
+.account-information p {
+    padding-top: 0px;
+    margin-top: 0px;
+    color: var(--light-font-color);
+}
+
+.account-subsection {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--hover-color);
+}
+
+.account-subsection span {
+    color: var(--light-font-color);
+}
+
+.account-subsection span:first-child {
+    font-weight: 600;
+    color: black;
+}
+
+.reset-password {
+    background-color: transparent;
+    border: 1px solid rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    margin: 12px;
+    border-radius: 50px;
+    transition: 200ms;
+}
+
+.reset-password:hover {
+    color: white;
+    background-color: black;
+}
+
+.reset-password.delete {
+    color: red;
+    border-color: red;
+}
+
+.reset-password.delete.small {
+    color: white;
+    background-color: red;
+    border-color: red;
+    padding: 10px 10px;
+    margin-bottom: 25px;
+}
+
+.reset-password.delete:hover {
+    background-color: red;
+    color: white;
+}
+
+.account-information {
+    margin-bottom: 15px;
+}
+
+.delete-modal.modal {
+    width: 350px;
+}
+
+.delete-modal.modal>h2,
+.delete-modal.modal>p {
+    margin-top: 0px;
+    padding: 0px 16px;
+}
+
+.delete-modal.modal p {
+    margin-top: 8px;
+    color: var(--light-font-color);
+}
+
+.delete-modal.modal-container {
+    align-items: center;
+}
+
+.delete-modal.modal {
+    margin: 0px;
+    position: relative;
+}
+
+.delete-modal.modal .loadBar-modal {
+    bottom: 0px;
+}
+
+.sticky {
+    position: sticky;
+    top: 0;
+    background-color: var(--background-color);
+    backdrop-filter: blur(8px);
+    margin: 0px;
+    padding: 16px;
+}
+
+.tweet.display {
+    padding: 20px;
+}
+
+.tweet.display h2 {
+    margin: 0px;
+    text-align: left;
+}
+
+.font-slider {
+    width: 100%;
+    background-color: transparent;
+    z-index: 20;
+    position: relative;
+    margin: 0px;
+    opacity: 0;
+}
+
+.sliders {
+    position: relative;
+    width: 100%;
+}
+
+.slider-overlay {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.slider-overlay span {
+    width: 15px;
+    display: inline-block;
+    height: 15px;
+    border-radius: 50%;
+    z-index: 15;
+    background-color: rgb(163, 192, 255);
+}
+
+.selected {
+    background-color: royalblue !important;
+    transform: scale(1.2);
+}
+
+.past-selected {
+    background-color: royalblue !important;
+}
+
+.invisible-track {
+    background-color: rgb(143, 178, 255);
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    position: absolute;
+}
+
+.visible-track {
+    transform-origin: left;
+    background-color: royalblue;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    z-index: 10;
+    position: absolute;
+}
+
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.colors {
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+    justify-content: space-between;
+}
+
+.colors>* {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.colors input {
+    display: none;
+}
+
+.color-svg {
+    width: 80%;
+    height: 80%;
+    fill: white;
+    display: none;
+}
+
+.colors input:checked+.color-svg {
+    display: block;
+}
+
+.colors .blue {
+    background-color: rgb(29, 155, 240);
+}
+
+.colors .yellow {
+    background-color: rgb(255, 212, 0);
+}
+
+.colors .pink {
+    background-color: rgb(249, 24, 128);
+}
+
+.colors .purple {
+    background-color: rgb(120, 86, 255);
+}
+
+.colors .orange {
+    background-color: rgb(255, 122, 0);
+}
+
+.colors .green {
+    background-color: rgb(0, 186, 124);
+}
+
+.themes {
+    display: flex;
+    gap: 16px;
+    margin-top: 15px;
+}
+
+.themes input {
+    display: none;
+}
+
+.svg-theme svg {
+    width: 100%;
+    height: 100%;
+    fill: white;
+    display: none;
+}
+
+.themes input:checked+.svg-theme svg {
+    display: block;
+}
+
+.themes>* {
+    background-color: gainsboro;
+    flex: 1;
+    height: 60px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid black;
+}
+
+.themes>*>span {
+    flex: 1;
+    font-weight: 900;
+}
+
+.svg-theme {
+    height: 25px;
+    width: 25px;
+    border: 2px solid gray;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+
+
+.themes .default {
+    background-color: white;
+    color: rgb(15, 20, 25);
+}
+
+.themes .dim {
+    background-color: rgb(21, 32, 43);
+    color: rgb(247, 249, 249);
+}
+
+.themes .lights-out {
+    background-color: rgb(0, 0, 0);
+    color: rgb(231, 233, 234);
+}

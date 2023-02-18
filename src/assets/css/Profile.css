@@ -6,7 +6,7 @@
 
 .calendar-svg {
     width: 18.75px;
-    fill: rgb(83, 100, 113);
+    fill: var(--light-font-color);
     height: 18.75px;
     margin-right: 4px;
 }
@@ -20,7 +20,7 @@
 
 .profile-tweets-count {
     font-size: .95rem;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     font-weight: 400;
 }
 
@@ -42,7 +42,7 @@
     width: 142px;
     border-radius: 50%;
     padding: 4px;
-    background-color: white;
+    background-color: var(--background-color);
 }
 
 .minimized {
@@ -71,6 +71,7 @@
 }
 
 .edit-profile {
+    color: var(--font-color);
     padding: .45rem .95rem;
     border-radius: 50px;
     font-weight: 600;
@@ -82,7 +83,7 @@
 }
 
 .edit-profile:hover {
-    background-color: rgba(220, 220, 220, 0.63);
+    background-color: rgba(220, 220, 220, 0.466);
 }
 
 .profile {
@@ -106,17 +107,17 @@
 
 .profile-tag {
     font-size: 1.1rem;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
 }
 
 .profile-creation-date {
     display: flex;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     align-items: center;
 }
 
 .profile-track {
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     display: flex;
     gap: 20px;
     justify-content: flex-start;
@@ -129,7 +130,7 @@
 
 .profile-navbar {
     display: flex;
-    border-bottom: 1px solid rgb(239, 243, 244);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .profile-link {
@@ -137,7 +138,7 @@
     white-space: nowrap;
     flex: 1;
     font-size: 1.05rem;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     text-decoration: none;
 }
 
@@ -175,7 +176,8 @@
     width: 100%;
     padding: 8px;
     padding-top: 22px;
-    border: 1px solid rgb(239, 243, 244);
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     color: var(--font-color);
 }
@@ -187,30 +189,35 @@
     padding: 10px;
     margin-bottom: 40px;
 }
-.profile-modal.modal-container{
+
+.profile-modal.modal-container {
     align-items: center;
 }
-.profile-modal.modal{
+
+.profile-modal.modal {
     margin: 0px;
 }
-.profile-info-modal .inputs{
-        font-family: inherit;
+
+.profile-info-modal .inputs {
+    font-family: inherit;
 }
 
 .profile-info-modal label {
     position: relative;
 }
-.inputs:not(:focus) + .label-text.expanded {
+
+.inputs:not(:focus)+.label-text.expanded {
     transform: translateY(-50%);
     top: 30px;
     font-size: 1.1rem;
 }
 
-.label-text, .inputs:focus+.label-text {
+.label-text,
+.inputs:focus+.label-text {
     position: absolute;
     left: 8px;
     top: 4px;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     transition: 200ms;
     font-size: .9rem;
 }
@@ -222,34 +229,37 @@
     right: 4px;
     top: 4px;
     font-size: .95rem;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
     display: none;
 }
 
- .inputs:focus {
+.inputs:focus {
     outline: 2px solid rgb(0, 162, 255);
 }
- .inputs:focus ~ .letter-count {
+
+.inputs:focus~.letter-count {
     display: block;
 }
-.profile-info-modal .inputs:focus + .label-text {
+
+.profile-info-modal .inputs:focus+.label-text {
     color: rgb(0, 162, 255);
 }
 
-.profile-bio{
+.profile-bio {
     text-align: left;
 }
 
-textarea{
+textarea {
     resize: none;
 }
-.profile-banner{
+
+.profile-banner {
     height: 100%;
     object-fit: cover;
     width: 100%;
 }
 
-.loadBar-modal{
+.loadBar-modal {
     transition: 400ms;
     position: absolute;
     height: 4px;
@@ -258,4 +268,7 @@ textarea{
     transform-origin: left;
     left: 0px;
     background-color: rgb(0, 162, 255);
+}
+.modal-wrapper{
+    overflow: auto;
 }

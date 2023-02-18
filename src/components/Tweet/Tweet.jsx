@@ -8,7 +8,7 @@ import UserPreview from "../Main/UserPreview";
 import Modal from "../Modal";
 import TweetRep from "./TweetRep";
 
-function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
+function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId, profile }) {
     const replyRef = useRef()
     const closeRef = useRef()
     const [tweet, setTweet] = useState({})
@@ -20,6 +20,7 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
     const [retweets, setRetweets] = useState()
     const [retweeted, setRetweeted] = useState(false)
     const [bookmarked, setBookmarked] = useState(true)
+    const [pinned, setPinned] = useState(false)
 
 
     const handleLike = async (e) => {
@@ -118,6 +119,20 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
         }
     }
 
+    const handlePinned = async () => {
+        if (pinned) {
+            setPinned(false)
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
+                pinned: false,
+            })
+        } else {
+            setPinned(true)
+            await updateDoc(doc(getFirestore(), 'tweets', (id || tweetId)), {
+                pinned: true,
+            })
+        }
+    }
+
     const fetchTweetData = async (id) => {
         const data = await getDoc(doc(getFirestore(), 'tweets', id))
 
@@ -145,9 +160,14 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
                 setRetweets(tweet.retweeted_by.length)
             }
 
+            setPinned(tweet.pinned)
             setBookmarked(tweet.bookmarked_by.includes(user.user.tag))
             setLiked(tweet.liked_by.includes(user.user.tag))
             setRetweeted(tweet.retweeted_by.includes(user.user.tag))
+        } else if (tweet.userId) {
+            setLikes(tweet.liked_by.length)
+            setRetweets(tweet.retweeted_by.length)
+
         }
 
 
@@ -179,11 +199,14 @@ function Tweet({ tweetData, index = 0, id, isParent, isModal, tweetId }) {
                     <TweetRep parentId={id} parentName={tweet.userTag} ancestorUser={tweet.parent_tweet_user} closeRef={closeRef} isModaled />
                 </Modal>}
             <UserPreview
+                profile={profile}
+                handlePinned={handlePinned}
+                pinned={pinned}
                 bookmarked={bookmarked}
                 handleBookmark={handleBookmark}
                 hasOptions={true}
                 className={isParent ? "tweet tweet-parent" : 'tweet'}
-                path={`/${tweet.userTag}/status/${(id || tweetId) }`}
+                path={`/${tweet.userTag}/status/${(id || tweetId)}`}
                 id={tweet.userId}
                 time={tweet.created_at}
                 retweeted_by={(tweetData && tweetData.retweeted_tweet) ? { tag: tweetData.userTag, name: tweetData.userName } : null}

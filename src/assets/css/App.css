@@ -1,10 +1,40 @@
-.App {
-  --font-color: #282c34;
+.default {
+  --background-color: white;
+  --semitransparent-background: rgba(255, 255, 255, 0.85);
+  --border-color: rgb(239, 243, 244);
+  --hover-color: rgba(15, 20, 25, 0.1);
+  --font-color: rgb(15, 20, 25);
+  --light-font-color: var(--light-font-color);
 }
-textarea{
+
+.dim {
+  --background-color: rgb(21, 32, 43);
+  --semitransparent-background: rgba(21, 32, 43, 0.85);
+  --border-color: rgb(56, 68, 77);
+  --font-color: rgb(247, 249, 249);
+  --hover-color: rgb(48, 57, 68);
+  --light-font-color: rgb(139, 152, 165);
+}
+
+.lights-out {
+  --background-color: rgb(0, 0, 0);
+  --semitransparent-background: rgba(0, 0, 0, 0.85);
+  --border-color: rgb(47, 51, 54);
+  --font-color: rgb(231, 233, 234);
+  --hover-color: rgb(24, 24, 24);
+  --light-font-color: rgb(113, 118, 123);
+}
+
+textarea {
   outline: none;
   border: none;
+  color: var(--font-color);
 }
+
+.app-wrap {
+  background-color: var(--background-color);
+}
+
 .App {
   justify-content: center;
   text-align: center;
@@ -13,20 +43,24 @@ textarea{
   margin: auto;
   min-height: 100vh;
 }
+h1{
+  color: var(--font-color);
+}
 
 .App>* {
-  background-color: white;
+  background-color: var(--background-color);
 }
 
 main {
-  border-right: 1px solid rgb(239, 243, 244);
+  border-right: 1px solid var(--border-color);
+  color: var(--font-color);
   width: 600px;
   flex-direction: column;
   display: flex;
 }
 
 nav {
-  border-right: 1px solid rgb(239, 243, 244);
+  border-right: 1px solid var(--border-color);
   flex: 1;
   text-align: left;
   padding: 10px 30px;
@@ -61,6 +95,7 @@ nav {
 .nav-links a {
   width: fit-content;
   display: flex;
+  width: 100%;
   align-items: center;
   gap: 15px;
   color: var(--font-color);
@@ -71,11 +106,12 @@ nav {
 }
 
 .nav-links a:hover {
-  background-color: rgb(236, 236, 236);
+  background-color: var(--hover-color);
 }
 
 nav svg {
   height: 30px;
+  fill: var(--font-color);
 }
 
 
@@ -89,7 +125,7 @@ nav svg {
 }
 
 .active svg {
-  fill: black;
+  fill: var(--font-color);
   stroke: none;
 }
 
@@ -158,6 +194,10 @@ li:nth-child(2) .active svg {
 
 .sidebar-text-node {
   padding-right: 10px;
+  width: 100%;
+  overflow: hidden;
+  color: var(--font-color);
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 1281px) {
@@ -269,18 +309,20 @@ li:nth-child(2) .active svg {
     transform: rotate(900deg);
   }
 
-  100%{
+  100% {
     transform: rotate(1080deg);
   }
 }
-.heightened .banner{
+
+.heightened .banner {
   position: relative;
 }
 
-.emoji{
+.emoji {
   padding: 0px 1px;
 }
-.modal-container{
+
+.modal-container {
   top: 0;
   left: 0;
   position: fixed;
@@ -293,59 +335,67 @@ li:nth-child(2) .active svg {
   z-index: 100;
 }
 
-.modal{
+.modal {
   padding: 2px;
   margin-top: 80px;
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 16px;
   max-height: 600px;
   overflow: auto;
+  overflow: hidden;
   padding-top: 0px;
 }
 
-.close-modal-svg{
+.close-modal-svg {
   height: 36px;
   padding: 8px;
+  fill: var(--font-color);
   border-radius: 50%;
 }
-.close-modal{
+
+.close-modal {
   width: fit-content;
   height: 36px;
 }
-.close-modal-svg:hover{
-  background-color: rgba(220, 220, 220, 0.438);
+
+.close-modal-svg:hover {
+  background-color: var(--hover-color);
 }
 
-.modal .tweet{
+.modal .tweet {
   border: 0px;
 }
 
-.home-modal .tweet-write-content__control{
+.home-modal .tweet-write-content__control {
   min-height: 100px;
-  border-bottom: 1px solid rgb(239, 243, 244);
+  border-bottom: 1px solid var(--border-color);
 }
-.modal-header{
+
+.modal-header {
   display: flex;
   gap: 15px;
   align-items: center;
   padding: 12px;
   position: sticky;
   top: 0px;
-  background-color: rgba(255, 255, 255, 0.918);
+  background-color: var(--semitransparent-background);
   backdrop-filter: blur(8px);
   z-index: 10;
 }
-.modal-flex{
+
+.modal-flex {
   display: flex;
   flex: 1;
   justify-content: space-between;
   align-items: center;
 }
-.modal-title{
+
+.modal-title {
   font-size: 1.3rem;
   font-weight: 600;
 }
-.save-button{
+
+.save-button {
   background-color: black;
   color: white;
   font-size: 1.03rem;
@@ -356,22 +406,53 @@ li:nth-child(2) .active svg {
   transition: 200ms;
   border: none;
 }
-.save-button:hover{
+
+.save-button:hover {
   background-color: #282c34;
 }
-.centered{
+
+.centered {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 /* 720px */
 
-nav .tweet-header{
+nav .tweet-header {
   flex-direction: column;
   gap: 0px;
 }
-.input-file{
+
+.input-file {
   visibility: hidden;
   position: absolute;
+}
+
+.popup {
+  position: fixed;
+  bottom: 10px;
+  z-index: 10000;
+  background-color: rgb(29, 155, 240);
+  padding: 5px 30px;
+  color: white;
+  border-radius: 5px;
+  animation: apear 500ms linear;
+}
+
+@keyframes apear {
+  from {
+    transform: translateY(5px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tweet {
+  position: relative;
 }

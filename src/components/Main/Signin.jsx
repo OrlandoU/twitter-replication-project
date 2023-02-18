@@ -1,8 +1,8 @@
 import { collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore"
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext";
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 function Signin({ setModalHeader, setNonClosable, isGmail }) {
     const user = useContext(UserContext)
@@ -56,9 +56,9 @@ function Signin({ setModalHeader, setNonClosable, isGmail }) {
                     storageUri: fileSnapshot.metadata.fullPath,
                 });
             }
+            setProgress(1)
             document.body.style.overflow = 'initial'
             userData = await getDoc(doc(getFirestore(), 'users', getAuth().currentUser.uid))
-            setProgress(1)
             user.setUser(userData.data())
         } catch (error) {
             console.error('Error creating user', error)
@@ -68,11 +68,11 @@ function Signin({ setModalHeader, setNonClosable, isGmail }) {
 
 
     const handleStage1 = async (e) => {
+        e.preventDefault()
         if(isGmail){
             setStage(prev=>prev + 1)
             return
         }
-        e.preventDefault()
         const q = query(collection(getFirestore(), 'users'), where('email', '==', email))
         const emailDocs = await getDocs(q)
         if (emailDocs.size > 0) {
@@ -124,6 +124,7 @@ function Signin({ setModalHeader, setNonClosable, isGmail }) {
             return
         }
         setModalHeader(`Step ${stage + 1} of 3`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stage])
 
     if (stage === 0) {

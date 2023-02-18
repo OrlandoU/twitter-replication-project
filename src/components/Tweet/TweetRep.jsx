@@ -1,17 +1,21 @@
 import EmojiPicker from "emoji-picker-react"
-import { collection, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore"
+import { collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { Mention, MentionsInput } from "react-mentions"
 import { CreateTweetContext } from "../../Contexts/CreateTweetContexts"
+import { Popup } from "../../Contexts/PopupContext"
 import { UserContext } from "../../Contexts/UserContext"
 import UserPreview from "../Main/UserPreview"
 
 function TweetRep({ parentId = null, parentName = null, ancestorUser = null, closeRef, isModaled, reload }) {
+    const popup = useContext(Popup)
+    const [progress, setProgress] = useState(0)
     const [emojiModal, setEmojiModal] = useState(false)
     const [clicked, setClicked] = useState(isModaled)
     const user = useContext(UserContext)
     const textareaRef = useRef()
     const savedSelectionRef = useRef(null);
+    const [mentions, setMentions] = useState([])
     const [files, setFiles] = useState([])
     const [tweetContent, setTweetContent] = useState('')
     const createTweet = useContext(CreateTweetContext)
@@ -35,22 +39,40 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
     }
 
     const handleChange = (event, newValue, newPlainTextValue, mentions) => {
-        console.log(mentions)
+        setMentions(mentions)
         setTweetContent(event.target.value)
     }
 
     const handleClick = async () => {
+        setProgress(.7)
         if (!tweetContent) return
-        await createTweet(tweetContent, files, parentId, parentName, ancestorUser)
-        textareaRef.current.textContent = ''
-        if (closeRef) {
-            closeRef.current.click()
+        let tweet = await createTweet(tweetContent, files, parentId, parentName, ancestorUser, mentions)
+        if (parentId) {
+            popup('Reply has been sent...')
+        } else {
+            popup('Your tweet has been successfully posted!')
         }
+        setProgress(1)
+        if (mentions.length) {
+            for (let mention of mentions) {
+                await setDoc(doc(getFirestore(), 'notifications', tweet.id + user.user.tag), {
+                    userTag: mention.id,
+                    type: 'mention',
+                    viewed: false,
+                    tweetId: tweet.id,
+                    created_at: new Date().getTime(),
+                    updated_at: new Date().getTime()
+                })
+            }
+        }
+        textareaRef.current.textContent = ''
         if (reload) {
             reload()
         }
         setFiles('')
         setTweetContent('')
+        setProgress(null)
+        document.querySelector('.modal-container').click()
     }
 
     const handleFile = (e) => {
@@ -70,7 +92,6 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
     })
 
     const handleSuggestion = (entry) => {
-        console.log(entry)
         return <UserPreview data={{ ...entry, id: entry.originalId }} className={'suggestion'} />
     }
 
@@ -91,6 +112,7 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
         return () => { window.removeEventListener('click', removeModal) }
     }, [])
 
+
     return (
         <>
             {(parentId) &&
@@ -99,8 +121,11 @@ function TweetRep({ parentId = null, parentName = null, ancestorUser = null, clo
                 </div>}
             {user.user && <div className={!parentId ? "tweet tweet-wrapper home-write" : "tweet tweet-wrapper reply-write"}>
                 <div className="side-tweet">
-                    <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
+                    <div className="tweet-profile-pic-container">
+                        <img src={user.user.profile_pic} className="tweet-profile-pic" alt="" />
+                    </div>
                 </div>
+                {(progress > 0 && isModaled) && <div className="loadBar-modal" style={{ transform: `scaleX(${progress})` }}></div>}
                 <div className="tweet-write" onClick={() => textareaRef.current.focus()}>
                     <MentionsInput
                         value={tweetContent}

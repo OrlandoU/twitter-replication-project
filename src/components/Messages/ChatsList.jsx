@@ -123,7 +123,7 @@ function ChatsList() {
                             id={chat.data()[user.user.id]}
                             className='tweet'
                             time={chat.data().updated_at}>
-
+                                <div className="chat-last-message">{chat.data().last_message}</div>
                         </UserPreview>
                     </div>
                 )

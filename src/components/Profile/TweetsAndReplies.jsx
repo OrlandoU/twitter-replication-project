@@ -8,7 +8,7 @@ function TweetsAndReplies(){
     const url = useParams()
 
     const fetchTweets = async () => {
-        const q = query(collection(getFirestore(), 'tweets'), where('userTag', '==', url.profileTag), orderBy('created_at', 'desc'))
+        const q = query(collection(getFirestore(), 'tweets'), where('userTag', '==', url.profileTag), orderBy('pinned'), orderBy('created_at', 'desc'))
         const tweets = await getDocs(q)
         setTweets(tweets.docs)
     }
@@ -21,7 +21,7 @@ function TweetsAndReplies(){
         <>
             {
                 tweets.map(tweet => (
-                    <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.data().retweeted_tweet || tweet.id} />
+                    <Tweet tweetData={tweet.data()} key={tweet.id} id={tweet.data().retweeted_tweet || tweet.id} profile />
                 ))
             }
         </>

@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
 import { useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../Contexts/UserContext"
 import Signin from "../Main/Signin"
@@ -22,7 +22,7 @@ function RightBar() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchUsers = async (user) => {
-        const q = query(collection(getFirestore(), 'users'), where('id', '!=', user.id), orderBy('id'), orderBy('followers_count', 'desc'))
+        const q = query(collection(getFirestore(), 'users'), where('id', '!=', user.id), orderBy('id'), orderBy('followers_count', 'desc'), limit(4))
         onSnapshot(q, (data) => setUsers(data.docs))
         const users = await getDocs(q)
         setUsers(users.docs)

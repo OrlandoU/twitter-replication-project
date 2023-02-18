@@ -13,8 +13,8 @@
 }
 
 .right-bar-box {
-    background-color: rgb(247, 249, 249);
-    ;
+    background-color: var(--hover-color);
+    color: var(--font-color);
     padding: 0px 16px 16px 16px;
     border-radius: 15px;
 }
@@ -38,6 +38,7 @@
     background-color: var(--font-color);
     transition: 300ms;
 }
+
 .unfollow-button {
     font-family: inherit;
     border: 1px solid rgb(235, 235, 235);
@@ -75,14 +76,15 @@
     font-weight: 600;
     font-family: inherit;
     font-size: 1rem;
-    border: 1px solid rgb(225, 229, 230);
+    border: 1px solid var(--light-font-color);
 }
 
 .register-container {
     border-radius: 15px;
     display: flex;
     gap: 12px;
-    border: 1px solid rgb(225, 229, 230);
+    color: var(--font-color);
+    border: 1px solid var(--light-font-color);
     padding: 0px 16px 16px 16px;
     flex-direction: column;
 }
@@ -110,10 +112,12 @@
     padding-bottom: 16px;
     gap: 16px;
 }
-.register-or{
+
+.register-or {
     position: relative;
 }
-.register-or::after{
+
+.register-or::after {
     content: '';
     position: absolute;
     height: 1px;
@@ -123,8 +127,9 @@
     left: 0;
     z-index: 1;
 }
-.register-or span{
-    background-color: white;
+
+.register-or span {
+    background-color: var(--background-color);
     position: relative;
     padding: 8px;
     z-index: 2;
@@ -183,7 +188,7 @@
 .birthday-header p {
     margin: 0px;
     text-align: left;
-    color: rgb(83, 100, 113);
+    color: var(--light-font-color);
 }
 
 .date-containers>label {
@@ -220,16 +225,16 @@
     margin-bottom: 16px;
 }
 
-.login-footer{
+.login-footer {
     position: fixed;
     width: 100%;
     bottom: 0;
-    background-color:  rgb(29, 155, 240);
+    background-color: rgb(29, 155, 240);
     z-index: 100;
     padding: 12px;
 }
 
-.login-wrapper{
+.login-wrapper {
     display: flex;
     justify-content: space-between;
     max-width: 700px;
@@ -237,24 +242,26 @@
     color: white;
 }
 
-.login-footer-buttons{
+.login-footer-buttons {
     display: flex;
     gap: 12px;
     align-items: center;
 }
 
-.login-text .header{
+.login-text .header {
     font-size: 1.6rem;
     font-weight: 900;
 }
 
-.login-text .sub-header{
+.login-text .sub-header {
     font-size: 1.3rem;
 }
-.login-text > *{
+
+.login-text>* {
     text-align: left;
 }
-.login-footer-buttons button{
+
+.login-footer-buttons button {
     padding: .35rem 1.75rem;
     background-color: transparent;
     border: 1px solid white;
@@ -266,15 +273,24 @@
     transition: 200ms;
 }
 
-.login-footer-buttons button:nth-child(2){
+.login-footer-buttons button:nth-child(2) {
     background-color: white;
     color: rgb(29, 155, 240);
 }
 
-.login-footer-buttons button:hover{
+.login-footer-buttons button:hover {
     background-color: rgba(220, 220, 220, 0.171);
 }
 
 .login-footer-buttons button:nth-child(2):hover {
     background-color: rgba(255, 255, 255, 0.863);
+}
+
+.signin .loadBar-modal {
+    top: 0;
+    z-index: 100;
+}
+
+.modal-container.signin {
+    overflow: hidden;
 }

@@ -43,7 +43,9 @@ const Modal = React.forwardRef((props, ref) => {
                             <div className="modal-title">{props.modalHeader}</div>
                         </div>}
                 </div>
-                {props.children}
+                <div className="modal-wrapper">
+                    {props.children}
+                </div>
             </main>
         </div>
     )

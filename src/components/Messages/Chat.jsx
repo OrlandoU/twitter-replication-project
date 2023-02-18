@@ -36,8 +36,8 @@ function Chat() {
                     {url.chatId ?
                         <>
                             <div className="messages-container">
-                                {messages.map(message => (
-                                    <Message message={message.data()} />
+                                {messages.map((message, index, array) => (
+                                   <Message message={message.data()} nextDate={array[index + 1] ? array[index + 1].data().created_at : null} messageRef={message.ref}/>
                                 ))}
                             </div>
                             <div className="message-input-container">

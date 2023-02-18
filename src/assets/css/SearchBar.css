@@ -1,6 +1,6 @@
 .search-bar-svg {
     height: 18.75px;
-    fill: rgb(83, 100, 113);
+    fill: var(--light-font-color);
     width: 18.75px;
     transition: 300ms;
 }
@@ -14,14 +14,15 @@
     border-radius: 50px;
     transition: 200ms;
     border: 1px solid transparent;
-    background-color: rgb(238, 240, 241);
+    background-color: var(--hover-color);
 }
 
 .search-bar:focus-within {
-    background-color: white;
+    background-color: var(--background-color);
     border: 1px solid rgb(29, 155, 240);
 }
-.search-bar:focus-within svg{
+
+.search-bar:focus-within svg {
     fill: rgb(29, 155, 240)
 }
 
@@ -31,26 +32,34 @@
     border: none;
     width: 100%;
     outline: none;
+    color: var(--font-color);
 }
-.query{
+
+.query {
     padding: 16px !important;
 }
-.query .tweet-header{
+
+.query .tweet-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0px;
 }
 
-.query-user-bio{
+.query-user-bio {
     text-align: left;
     width: 100%;
 }
-.query .main-tweet-content{
+
+.query .main-tweet-content {
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-.query-user-follow{
-   flex: 1;
-   text-align: right;
+.query-user-follow {
+    flex: 1;
+    text-align: right;
+}
+
+.tweet-write-content__suggestions{
+    background-color: transparent !important;
 }

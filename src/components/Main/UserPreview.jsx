@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
 import Opt from "../Opt"
 
-const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by, isModal, isFirstMessage, hasOptions, bookmarked, handleBookmark }, ref) => {
+const UserPreview = forwardRef(({ id, children, time, className, path, main = false, cb, data, retweeted_by, isModal, isFirstMessage, hasOptions, bookmarked, handleBookmark, pinned, handlePinned, profile }, ref) => {
     const mainUser = useContext(UserContext)
     const optionRef = useRef()
     const [user, setUser] = useState({})
@@ -140,9 +140,16 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                                 }}>{mainUser.user && retweeted_by.tag === mainUser.user.tag ? 'You' : retweeted_by.name} Retweeted</div>
                             </div>
                         }
+                        {profile && pinned &&
+                            <div className="retweeted-header">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" class="retweeted-svg"><g><path d="M7 4.5C7 3.12 8.12 2 9.5 2h5C15.88 2 17 3.12 17 4.5v5.26L20.12 16H13v5l-1 2-1-2v-5H3.88L7 9.76V4.5z"></path></g></svg>                                <div className="tweet-username">Pinned Tweet</div>
+                            </div>
+                        }
                         <div className="tweet-wrapper">
                             <div className="side-tweet">
-                                <img className="tweet-profile-pic" src={user.profile_pic} alt="" />
+                                <div className="tweet-profile-pic-container">
+                                    <img className="tweet-profile-pic" src={user.profile_pic} alt="" />
+                                </div>
                             </div>
                             <div className="main-tweet-content">
                                 <div className={"tweet-header"}>
@@ -151,20 +158,32 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                                     {time && <div className="tweet-timestamp">· {convertTime(time)}</div>}
                                     {hasOptions &&
                                         <div className="tweet-options" ref={optionRef} onClick={(e) => e.stopPropagation()}>
-                                            <Opt triggerRef={optionRef}>
-                                                {user.id &&
-                                                    <>
-                                                        <div className="option" onClick={() => handleFollow(userRef)}>
-                                                            <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M10 4c-1.105 0-2 .9-2 2s.895 2 2 2 2-.9 2-2-.895-2-2-2zM6 6c0-2.21 1.791-4 4-4s4 1.79 4 4-1.791 4-4 4-4-1.79-4-4zm12.586 3l-2.043-2.04 1.414-1.42L20 7.59l2.043-2.05 1.414 1.42L21.414 9l2.043 2.04-1.414 1.42L20 10.41l-2.043 2.05-1.414-1.42L18.586 9zM3.651 19h12.698c-.337-1.8-1.023-3.21-1.945-4.19C13.318 13.65 11.838 13 10 13s-3.317.65-4.404 1.81c-.922.98-1.608 2.39-1.945 4.19zm.486-5.56C5.627 11.85 7.648 11 10 11s4.373.85 5.863 2.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H1.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46z"></path></g></svg>
-                                                            {isFallowing(user) ? "Unfollow @" + user.tag : "Follow @" + user.tag}
-                                                        </div>
-                                                        <div className="option" onClick={handleBookmark}>
-                                                            <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M17 3V0h2v3h3v2h-3v3h-2V5h-3V3h3zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V11h2v11.94l-8-5.71-8 5.71V4.5C4 3.12 5.119 2 6.5 2h4.502v2H6.5z"></path></g></svg>
-                                                            {bookmarked ? 'Remove Tweet from Bookmarks': 'Bookmark'}
-                                                        </div>
-                                                    </>
-                                                }
-                                            </Opt>
+                                            {user.id &&
+                                                <Opt triggerRef={optionRef}>
+                                                    {(mainUser.user && mainUser.user.id !== user.id) &&
+                                                        <>
+                                                            <div className="option" onClick={() => handleFollow(userRef)}>
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M10 4c-1.105 0-2 .9-2 2s.895 2 2 2 2-.9 2-2-.895-2-2-2zM6 6c0-2.21 1.791-4 4-4s4 1.79 4 4-1.791 4-4 4-4-1.79-4-4zm12.586 3l-2.043-2.04 1.414-1.42L20 7.59l2.043-2.05 1.414 1.42L21.414 9l2.043 2.04-1.414 1.42L20 10.41l-2.043 2.05-1.414-1.42L18.586 9zM3.651 19h12.698c-.337-1.8-1.023-3.21-1.945-4.19C13.318 13.65 11.838 13 10 13s-3.317.65-4.404 1.81c-.922.98-1.608 2.39-1.945 4.19zm.486-5.56C5.627 11.85 7.648 11 10 11s4.373.85 5.863 2.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H1.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46z"></path></g></svg>
+                                                                {isFallowing(user) ? "Unfollow @" + user.tag : "Follow @" + user.tag}
+                                                            </div>
+                                                            <div className="option" onClick={handleBookmark}>
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M17 3V0h2v3h3v2h-3v3h-2V5h-3V3h3zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V11h2v11.94l-8-5.71-8 5.71V4.5C4 3.12 5.119 2 6.5 2h4.502v2H6.5z"></path></g></svg>
+                                                                {bookmarked ? 'Remove Tweet from Bookmarks' : 'Bookmark'}
+                                                            </div>
+                                                        </>
+                                                    }{(mainUser.user && mainUser.user.id === user.id) &&
+                                                        <>
+                                                            <div className="option Delete" onClick={() => handleFollow(userRef)}>
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07zM9 17v-6h2v6H9zm4 0v-6h2v6h-2z"></path></g></svg>
+                                                                Delete Tweet
+                                                            </div>
+                                                            <div className="option" onClick={handlePinned}>
+                                                                <svg viewBox="0 0 24 24" aria-hidden="true" class="option-svg"><g><path d="M17 9.76V4.5C17 3.12 15.88 2 14.5 2h-5C8.12 2 7 3.12 7 4.5v5.26L3.88 16H11v5l1 2 1-2v-5h7.12L17 9.76zM7.12 14L9 10.24V4.5c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5v5.74L16.88 14H7.12z"></path></g></svg>
+                                                                {pinned ? 'Unpin from Profile' : 'Pin to your Profile'}
+                                                            </div>
+                                                        </>
+                                                    }
+                                                </Opt>}
                                             <svg viewBox="0 0 24 24" aria-hidden="true" class="sub-options"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
                                         </div>}
                                 </div>
@@ -173,7 +192,9 @@ const UserPreview = forwardRef(({ id, children, time, className, path, main = fa
                         </div>
                     </div> : <div className="main-tweet" ref={ref}>
                         <div className="main-tweet-header">
-                            <img src={user.profile_pic} alt="User Profile" className="tweet-profile-pic" />
+                            <div className="tweet-profile-pic-container">
+                                <img src={user.profile_pic} alt="User Profile" className="tweet-profile-pic" />
+                            </div>
                             <div className="main-tweet-names">
                                 <div className="main-tweet-name tweet-username" onClick={handleProfile}>{user.name}</div>
                                 <div className="main-tweet-tag tweet-usertag">@{user.tag}</div>

@@ -1,7 +1,10 @@
 .chats {
-    border-right: 1px solid rgb(239, 243, 244);
+    border-right: 1px solid var(--border-color);
+    color: var(--font-color);
     width: 388px;
-    padding: 12px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .messages-container {
@@ -27,6 +30,7 @@
 
 .messages-main {
     display: flex;
+    height: 100vh;
     flex-direction: column;
 }
 
@@ -36,7 +40,7 @@
     flex-direction: column;
     gap: 5px;
     padding: 5px;
-    background-color: rgb(239, 243, 244);
+    background-color: var(--border-color);
 }
 
 .empty-message::after {
@@ -78,7 +82,12 @@
     outline: 0px;
     white-space: pre-line;
     max-height: 200px;
+    overflow-wrap: break-word;
     overflow: auto;
+}
+
+.message-write-content * {
+    overflow-wrap: inherit !important;
 }
 
 .message-write-options {
@@ -97,21 +106,73 @@
 }
 
 .message-other {
-    padding: 12px 12px 5px 12px;
+    padding: 3px 12px 3px 12px;
     display: flex;
+    width: fit-content;
     flex-direction: column;
     gap: 2px;
     transition: 200ms;
-    align-items: flex-start;
+    position: relative;
+}
+
+.message-mine .message {
+    transition: 300ms;
+    left: -20px;
+    top: calc(50% - 20px);
+}
+
+.message-mine :not(.message-date)+.message {
+    left: -20px;
+    top: calc(50% - 10px);
+}
+
+.message-other .message {
+    transition: 300ms;
+    right: -20px;
+    top: calc(50% - 20px);
+}
+
+.message-other :not(.message-date)+.message {
+    right: -20px;
+    top: calc(50% - 10px);
+}
+
+.message-other:hover .message>svg,
+.message-mine:hover .message>svg {
+    opacity: 1;
+    z-index: initial;
+}
+
+.message>svg {
+    transition: 200ms;
+    opacity: 0;
+    z-index: -100;
 }
 
 .message-mine {
+    margin-left: auto;
     align-items: flex-end;
-    padding: 12px 12px 5px 12px;
+    padding: 3px 12px 3px 12px;
     display: flex;
+    width: fit-content;
     flex-direction: column;
     gap: 2px;
     transition: 200ms;
+    position: relative;
+}
+
+.message-mine>*,
+.message-other>* {
+    max-width: 395px;
+    width: fit-content;
+}
+
+.message-other .message-content {
+    background-color: var(--border-color);
+    color: black;
+    border-radius: 30px;
+    text-align: left;
+    border-bottom-left-radius: 5px;
 }
 
 .message-content {
@@ -121,10 +182,11 @@
 .message-mine .message-content {
     background-color: rgb(29, 155, 240);
     color: white;
-    border-top-right-radius: 30px;
-    border-top-left-radius: 30px;
-    border-bottom-left-radius: 30px;
+    border-radius: 30px;
+    text-align: right;
+    border-bottom-right-radius: 5px;
 }
+
 
 .sub-options.chat {
     fill: black;
@@ -143,52 +205,61 @@
 .chats-head * {
     margin: 0;
 }
-.chats-placeholder{
+
+.chats-placeholder {
     padding: 0px 16px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
-.chats-placeholder p, .chat-placeholder p{
-    color: rgb(83, 100, 113);
+
+.chats-placeholder p,
+.chat-placeholder p {
+    color: var(--light-font-color);
     text-align: left;
     margin-top: 0px;
 }
-.chats-placeholder-header{
+
+.chats-placeholder-header {
     font-size: 2.5rem;
     font-weight: 900;
     text-align: left;
     margin-top: 24px;
 }
+
 .chat-placeholder-header {
     font-size: 2rem;
     font-weight: 900;
     text-align: left;
     margin-top: 24px;
 }
-.chat-placeholder{
+
+.chat-placeholder {
     width: 368px;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.messages-main.center{
+.messages-main.center {
     align-items: center;
     justify-content: center;
 }
 
-.chat-new-message{
+.chat-new-message {
     width: fit-content;
 }
-.modal.message{
+
+.modal.message {
     padding: 0px;
 }
-.message-search-svg{
+
+.message-search-svg {
     height: 20px;
     fill: gray;
 }
-.new-message-input-container{
+
+.new-message-input-container {
     border-bottom: 1px solid gainsboro;
     display: flex;
     padding: 12px 24px;
@@ -197,42 +268,46 @@
     flex-direction: row-reverse;
 }
 
-.new-message-input-container input{
+.new-message-input-container input {
     border: none;
     outline: none;
     flex: 1;
+    color: var(--font-color);
+    background-color: var(--background-color);
     font-size: 1rem;
 }
 
-.new-message-input-container input:focus + * {
+.new-message-input-container input:focus+* {
     fill: rgb(29, 155, 240);
 }
 
-.modal.message .tweet-header{
+.modal.message .tweet-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0px;
 }
 
-.modal.message .tweet{
+.modal.message .tweet {
     cursor: pointer;
     transition: 300ms;
 }
+
 .modal.message .tweet:hover {
     cursor: pointer;
     background-color: rgba(220, 220, 220, 0.37);
 }
-.modal.message .tweet .tweet-profile-pic{
+
+.modal.message .tweet .tweet-profile-pic {
     box-shadow: none;
 }
 
-.align-loader{
+.align-loader {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.message-input-container .tweet-media-wrapper{
+.message-input-container .tweet-media-wrapper {
     width: 150px;
     height: 150px;
     margin: 8px 0px 0px 8px;
@@ -244,7 +319,7 @@
     height: 100%;
 }
 
-.message-media-remove{
+.message-media-remove {
     position: absolute;
     left: 4px;
     top: 4px;
@@ -255,20 +330,63 @@
     background-color: rgba(0, 0, 0, 0.521);
     border-radius: 50%;
 }
-.main-tweet-header.first-message{
+
+.main-tweet-header.first-message {
     flex-direction: column;
 }
-.main-tweet.first-message{
-    border-bottom: 1px solid rgb(239, 243, 244);
+
+.main-tweet.first-message {
+    border-bottom: 1px solid var(--border-color);
     padding: 46px 36px;
+    margin-bottom: 12px;
 }
-.first-message .tweet-profile-pic{
+
+.first-message .tweet-profile-pic {
     width: 68px;
     height: 68px;
 }
-.first-message .main-tweet-names{
+
+.first-message .main-tweet-names {
     align-items: center;
 }
-.first-message .profile-name, .first-message .profile-tag{
+
+.first-message .profile-name,
+.first-message .profile-tag {
     font-size: 1.1rem;
+}
+
+.chat-last-message {
+    color: var(--light-font-color);
+    text-align: left;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.chats .tweet {
+    width: 100%;
+}
+
+.chats .tweet-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.chats-head {
+    padding: 12px;
+}
+
+.message-date {
+    font-size: .85rem;
+    color: var(--light-font-color);
+}
+
+.tweet-options.message {
+    position: absolute;
+}
+
+.message-write-content__suggestions {
+    bottom: 100%;
 }
