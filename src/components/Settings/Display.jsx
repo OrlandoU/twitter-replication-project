@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { useEffect, useState } from "react"
+import { ColorContext } from "../../Contexts/ColorContext";
 import { ThemeContext } from "../../Contexts/ThemeContext";
 
 function Display() {
     const setTheme = useContext(ThemeContext)
+    const setColor = useContext(ColorContext)
     const [fontSize, setFontSize] = useState(10)
 
     const handleSliderChange = (event) => {
@@ -18,6 +20,11 @@ function Display() {
         const clampedValue = Math.min(maxFontSize, Math.max(minFontSize, mappedValue));
         setFontSize(clampedValue);
     };
+
+    const handleColor = (e) => {
+        localStorage.setItem('color-tw', e.target.value)
+        setColor(e.target.value)
+    }
 
     const handleTheme = (e) => {
         localStorage.setItem('theme-tw', e.target.value)
@@ -74,27 +81,27 @@ function Display() {
                 <h2>Color</h2>
                 <div className="colors">
                     <label htmlFor="blue" className="blue">
-                        <input type="radio" name="color" id="blue" />
+                        <input type="radio" name="color" id="blue" value='blue-color' onChange={handleColor}/>
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                     <label htmlFor="yellow" className="yellow">
-                        <input type="radio" name="color" id="yellow" />
+                        <input type="radio" name="color" id="yellow" value='yellow-color' onChange={handleColor} />
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                     <label htmlFor="pink" className="pink">
-                        <input type="radio" name="color" id="pink" />
+                        <input type="radio" name="color" id="pink" value='pink-color' onChange={handleColor} />
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                     <label htmlFor="purple" className="purple">
-                        <input type="radio" name="color" id="purple" />
+                        <input type="radio" name="color" id="purple" value='purple-color' onChange={handleColor} />
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                     <label htmlFor="orange" className="orange">
-                        <input type="radio" name="color" id="orange" />
+                        <input type="radio" name="color" id="orange" value='orange-color' onChange={handleColor} />
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                     <label htmlFor="green" className="green">
-                        <input type="radio" name="color" id="green" />
+                        <input type="radio" name="color" id="green" value='green-color' onChange={handleColor}/>
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="color-svg"><g><path d="M9.64 18.952l-5.55-4.861 1.317-1.504 3.951 3.459 8.459-10.948L19.4 6.32 9.64 18.952z"></path></g></svg>
                     </label>
                 </div>

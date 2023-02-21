@@ -8,8 +8,9 @@ import Modal from "../Modal"
 import Login from "../Main/Login"
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import SearchBar from "./SearchBar"
+import Trends from "./Trends"
 
-function RightBar() {
+function RightBar(props) {
     const [count, setCount] = useState(0)
     const register = useRef()
     const [users, setUsers] = useState([])
@@ -150,6 +151,10 @@ function RightBar() {
             }
             <section className="right-bar">
                 <SearchBar />
+                {!props.onExplore &&
+                    <div className="right-bar-box trend-box">
+                        <Trends />
+                    </div>}
                 {!userP.user &&
                     <div className="register-container">
                         <h2 className="title">New on Twitter?</h2>

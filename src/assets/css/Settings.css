@@ -272,7 +272,7 @@
 }
 
 .colors .blue {
-    background-color: rgb(29, 155, 240);
+    background-color: var(--color);
 }
 
 .colors .yellow {

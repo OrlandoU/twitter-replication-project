@@ -19,7 +19,7 @@
 
 .search-bar:focus-within {
     background-color: var(--background-color);
-    border: 1px solid rgb(29, 155, 240);
+    border: 1px solid var(--color);
 }
 
 .search-bar:focus-within svg {
@@ -60,6 +60,6 @@
     text-align: right;
 }
 
-.tweet-write-content__suggestions{
+.tweet-write-content__suggestions {
     background-color: transparent !important;
 }

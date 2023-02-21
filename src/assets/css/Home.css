@@ -504,3 +504,7 @@ main:not(.modal)>.tweet:not(.display):not(.return-tweet-exp):not(.home-write):no
     width: 100%;
     left: 0px;
 }
+
+.right-bar-box.trend-box{
+    padding: 0px;
+}

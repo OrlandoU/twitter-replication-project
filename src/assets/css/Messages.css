@@ -180,7 +180,7 @@
 }
 
 .message-mine .message-content {
-    background-color: rgb(29, 155, 240);
+    background-color: var(--color);
     color: white;
     border-radius: 30px;
     text-align: right;
@@ -278,7 +278,7 @@
 }
 
 .new-message-input-container input:focus+* {
-    fill: rgb(29, 155, 240);
+    fill: var(--color);
 }
 
 .modal.message .tweet-header {

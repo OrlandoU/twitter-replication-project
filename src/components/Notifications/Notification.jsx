@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { UserContext } from "../../Contexts/UserContext"
+import HTMLReactParser from "html-react-parser";
+
 
 function Notification({ data, collectionRef }) {
     const [loading, setLoading] = useState(false)
@@ -79,7 +81,7 @@ function Notification({ data, collectionRef }) {
                                 </div>
                             </div>
                             <div className="noti-tweet-content">
-                                {data.tweetContent}
+                                {data.tweetContent && HTMLReactParser(data.tweetContent)}
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,7 @@
 .notification-header {
     padding: 8px 16px 0px 16px;
     text-align: left;
+    z-index: 10;
     background-color: var(--semitransparent-background);
     backdrop-filter: blur(8px);
     position: sticky;
@@ -30,7 +31,7 @@
 }
 
 .notification-svg.follow {
-    fill: rgb(29, 155, 240);
+    fill: var(--color);
 }
 
 .notification-main .side-tweet {

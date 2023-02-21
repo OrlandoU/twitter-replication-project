@@ -36,12 +36,12 @@
 }
 
 .main-tweet-wrapper {
-    border-top: 1px solid rgb(239, 243, 244);
-    border-bottom: 1px solid rgb(239, 243, 244);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .main-tweet-interact {
-    background-color: white;
+    background-color: var(--background-color);
     width: 100%;
     padding: 4px 30px 4px 30px;
     display: flex;
@@ -72,11 +72,11 @@
 
 .bold {
     font-weight: 600;
-    color: black;
+    color: var(--font-color);
 }
 
 .main-tweet-meta {
-    border-top: 1px solid rgb(239, 243, 244);
+    border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     height: 44px;

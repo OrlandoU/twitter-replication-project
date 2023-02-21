@@ -19,11 +19,13 @@ import Query from '../query/Query';
 import Settings from '../Settings/Settings';
 import { Popup } from '../../Contexts/PopupContext';
 import { ThemeContext } from '../../Contexts/ThemeContext';
+import { ColorContext } from '../../Contexts/ColorContext';
 
 
 function App() {
   const [user, setUser] = useState()
   const [theme, setTheme] = useState(localStorage.getItem('theme-tw') || 'default')
+  const [color, setColor] = useState(localStorage.getItem('color-tw') || 'blue-color')
   const location = useLocation()
   const [popup, setPopup] = useState()
   const [visible, setVisible] = useState()
@@ -31,6 +33,7 @@ function App() {
   const createTweet = async (content = "Howdy shawty", files, parentId = null, parent_tweet_name = null, ancestorUser = null, mentions) => {
     let keywords = content.split(" ").filter(word => /^[a-zA-Z0-9]+$/.test(word))
     let substring = keywords.map(word => word.split('').map((el, index) => word.slice(0, index + 1).toLowerCase()))
+    substring = [].concat(...substring)
     let tweet
     try {
       tweet = await addDoc(collection(getFirestore(), 'tweets'), {
@@ -40,7 +43,7 @@ function App() {
         hasMedia: files.length > 0,
         parent_tweet: parentId,
         parent_tweet_user: parent_tweet_name,
-        search_substring: [].concat(...substring),
+        search_substring: substring,
         thread_children: [],
         thread_size: 0,
         retweeted_by: [],
@@ -135,6 +138,17 @@ function App() {
       }
 
     })
+
+    substring.forEach(async substring => {
+      try {
+        await updateDoc(doc(getFirestore(), 'trends', substring), {
+          count: increment(1)
+        })
+      } catch (error) {
+        console.error('Updating substring in existence', error)
+      }
+    })
+
     updateParentTweets(parentId)
     return tweet
   }
@@ -192,29 +206,31 @@ function App() {
   }, [])
 
   return (
-    <div className={"app-wrap " + theme}>
+    <div className={"app-wrap " + theme + ' ' + color}>
       <div className="App ">
-        <ThemeContext.Provider value={setTheme}>
-          <Popup.Provider value={setPopup}>
-            <UserContext.Provider value={{ user, setUser }}>
-              <CreateTweetContext.Provider value={createTweet}>
-                <SideBar />
-                {(visible && popup) && <span className='popup'>{popup}</span>}
-                <Routes>
-                  <Route path='/' element={<Home />} />
-                  <Route path='/explore' element={<Explore />} />
-                  <Route path='/notifications/*' element={<Notifications />} />
-                  <Route path='/messages/*' element={<Messages />} />
-                  <Route path='/bookmarks' element={<Bookmarks />} />
-                  <Route path='/settings/*' element={<Settings />} />
-                  <Route path='/query/:query/*' element={<Query />} />
-                  <Route path='/:profileTag/*' element={<Profile />} />
-                  <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
-                </Routes>
-              </CreateTweetContext.Provider>
-            </UserContext.Provider>
-          </Popup.Provider>
-        </ThemeContext.Provider>
+        <ColorContext.Provider value={setColor}>
+          <ThemeContext.Provider value={setTheme}>
+            <Popup.Provider value={setPopup}>
+              <UserContext.Provider value={{ user, setUser }}>
+                <CreateTweetContext.Provider value={createTweet}>
+                  <SideBar />
+                  {(visible && popup) && <span className='popup'>{popup}</span>}
+                  <Routes>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/explore' element={<Explore />} />
+                    <Route path='/notifications/*' element={<Notifications />} />
+                    <Route path='/messages/*' element={<Messages />} />
+                    <Route path='/bookmarks' element={<Bookmarks />} />
+                    <Route path='/settings/*' element={<Settings />} />
+                    <Route path='/query/:query/*' element={<Query />} />
+                    <Route path='/:profileTag/*' element={<Profile />} />
+                    <Route path='/:profileName/status/:tweetId' element={<TweetExp key={location.pathname} />} />
+                  </Routes>
+                </CreateTweetContext.Provider>
+              </UserContext.Provider>
+            </Popup.Provider>
+          </ThemeContext.Provider>
+        </ColorContext.Provider>
       </div>
     </div>
   );
